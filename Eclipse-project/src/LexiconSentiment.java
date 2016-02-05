@@ -87,7 +87,8 @@ class Tweet {
 public class LexiconSentiment {
 	private Set<String> negativeLexicon = null;
 	private Set<String> positiveLexicon = null;
-	private ArrayList<Tweet> testList = null;
+	private ArrayList<Tweet> tweetList = null;
+	private ArrayList<ArrayList<Tweet> > tweetListPartition = null;
 
 	/**
 	 * @param args
@@ -110,7 +111,7 @@ public class LexiconSentiment {
 		negativeLexicon = new TreeSet<String>();
 		positiveLexicon = new TreeSet<String>();
 		
-		testList = new ArrayList<Tweet>();
+		tweetList = new ArrayList<Tweet>();
 	}
 	public boolean initialize() throws IOException{
 		// Read in negative Lexicon 
@@ -130,6 +131,17 @@ public class LexiconSentiment {
 			System.out.println("positive lexicon size: " + positiveLexicon.size());
 		}
 		
+		//read in training elements 
+		String trainFname = GlobalHelper.pathToDataset + "training.csv";
+		if(!readTestFile(trainFname)){
+			System.err.println("fail to read: " + trainFname);
+			System.err.println("fail to read in train elements from: " + trainFname);
+			return false;
+		}
+		else{
+			System.out.println("count of train tweets: " + tweetList.size());
+		}
+		
 		//read in test elements 
 		String testFname = GlobalHelper.pathToDataset + "testing.csv";
 		if(!readTestFile(testFname)){
@@ -138,8 +150,12 @@ public class LexiconSentiment {
 			return false;
 		}
 		else{
-			System.out.println("count of test tweets: " + testList.size());
+			System.out.println("count of combined tweets: " + tweetList.size());
 		}
+		
+		//ten fold partition
+		tenFoldPartition();
+		
 		return true;
 	}
 	private boolean initLexicon(String fname, Set<String> lexicon) throws IOException{
@@ -155,11 +171,109 @@ public class LexiconSentiment {
 	}
 	private boolean readTestFile(String fname) throws IOException{
 		//read in csv test file
-		if(!CsvFileReader.readCsvElementsTweet(testList, fname, 3, true)){
+		if(!CsvFileReader.readCsvElementsTweet(tweetList, fname, 3, true)){
 			System.err.println("fail to read in csv file: " + fname);
 			return false;
 		}
 		return true;
+	}
+	
+	private void tenFoldPartition() {
+		System.out.println("Start 10-fold partitioning....");
+		
+		int appleIrrelevant ,  applePositive , appleNeutral , appleNegative;
+		appleIrrelevant = applePositive = appleNeutral = appleNegative = 0;
+		int googleIrrelevant ,  googlePositive , googleNeutral , googleNegative;
+		googleIrrelevant = googlePositive = googleNeutral = googleNegative = 0;
+		int msIrrelevant ,  msPositive , msNeutral , msNegative;
+		msIrrelevant = msPositive = msNeutral = msNegative = 0;
+		int twitterIrrelevant ,  twitterPositive , twitterNeutral , twitterNegative;
+		twitterIrrelevant = twitterPositive = twitterNeutral = twitterNegative = 0;
+		
+		tweetListPartition = new ArrayList<ArrayList<Tweet>>();
+		for(int i=0;i<=10;i++){
+			tweetListPartition.add(new ArrayList<Tweet>());
+		}
+
+		for (int i = 0; i < tweetList.size(); i++) {
+			if (tweetList.get(i).getTopic().equalsIgnoreCase("apple")) {
+				if (tweetList.get(i).getSentiment().equalsIgnoreCase("irrelevant")) {
+					tweetListPartition.get(appleIrrelevant).add(tweetList.get(i));
+					appleIrrelevant = (appleIrrelevant+1)%10;
+				}
+				else if (tweetList.get(i).getSentiment().equalsIgnoreCase("positive")) {
+					tweetListPartition.get(applePositive).add(tweetList.get(i));
+					applePositive = (applePositive+1)%10;
+				}
+				else if (tweetList.get(i).getSentiment().equalsIgnoreCase("neutral")) {
+					tweetListPartition.get(appleNeutral).add(tweetList.get(i));
+					appleNeutral = (appleNeutral+1)%10;
+				}
+				else if (tweetList.get(i).getSentiment().equalsIgnoreCase("negative")) {
+					tweetListPartition.get(appleNegative).add(tweetList.get(i));
+					appleNegative = (appleNegative+1)%10;
+				}
+			}
+			else if (tweetList.get(i).getTopic().equalsIgnoreCase("google")) {
+				if (tweetList.get(i).getSentiment().equalsIgnoreCase("irrelevant")) {
+					tweetListPartition.get(googleIrrelevant).add(tweetList.get(i));
+					googleIrrelevant = (googleIrrelevant+1)%10;
+				}
+				else if (tweetList.get(i).getSentiment().equalsIgnoreCase("positive")) {
+					tweetListPartition.get(googlePositive).add(tweetList.get(i));
+					googlePositive = (googlePositive+1)%10;
+				}
+				else if (tweetList.get(i).getSentiment().equalsIgnoreCase("neutral")) {
+					tweetListPartition.get(googleNeutral).add(tweetList.get(i));
+					googleNeutral = (googleNeutral+1)%10;
+				}
+				else if (tweetList.get(i).getSentiment().equalsIgnoreCase("negative")) {
+					tweetListPartition.get(googleNegative).add(tweetList.get(i));
+					googleNegative = (googleNegative+1)%10;
+				}
+			}
+			else if (tweetList.get(i).getTopic().equalsIgnoreCase("microsoft")) {
+				if (tweetList.get(i).getSentiment().equalsIgnoreCase("irrelevant")) {
+					tweetListPartition.get(msIrrelevant).add(tweetList.get(i));
+					msIrrelevant = (msIrrelevant+1)%10;
+				}
+				else if (tweetList.get(i).getSentiment().equalsIgnoreCase("positive")) {
+					tweetListPartition.get(msPositive).add(tweetList.get(i));
+					msPositive = (msPositive+1)%10;
+				}
+				else if (tweetList.get(i).getSentiment().equalsIgnoreCase("neutral")) {
+					tweetListPartition.get(msNeutral).add(tweetList.get(i));
+					msNeutral = (msNeutral+1)%10;
+				}
+				else if (tweetList.get(i).getSentiment().equalsIgnoreCase("negative")) {
+					tweetListPartition.get(msNegative).add(tweetList.get(i));
+					msNegative = (msNegative+1)%10;
+				}
+			}
+			else if (tweetList.get(i).getTopic().equalsIgnoreCase("twitter")) {
+				if (tweetList.get(i).getSentiment().equalsIgnoreCase("irrelevant")) {
+					tweetListPartition.get(twitterIrrelevant).add(tweetList.get(i));
+					twitterIrrelevant = (twitterIrrelevant+1)%10;
+				}
+				else if (tweetList.get(i).getSentiment().equalsIgnoreCase("positive")) {
+					tweetListPartition.get(twitterPositive).add(tweetList.get(i));
+					twitterPositive = (twitterPositive+1)%10;
+				}
+				else if (tweetList.get(i).getSentiment().equalsIgnoreCase("neutral")) {
+					tweetListPartition.get(twitterNeutral).add(tweetList.get(i));
+					twitterNeutral = (twitterNeutral+1)%10;
+				}
+				else if (tweetList.get(i).getSentiment().equalsIgnoreCase("negative")) {
+					tweetListPartition.get(twitterNegative).add(tweetList.get(i));
+					twitterNegative = (twitterNegative+1)%10;
+				}
+			}
+		}
+
+		for(int i=0;i<10;i++) {
+			System.out.println("Fold " + i + " size : " + tweetListPartition.get(i).size());
+		}
+		System.out.println("End 10-fold partitioning....\n");
 	}
 	
 	public void test() throws FileNotFoundException{
@@ -167,10 +281,10 @@ public class LexiconSentiment {
 		FileOutputStream fout = new FileOutputStream("sentiment-result.csv");
 		PrintWriter pw = new PrintWriter(fout);
 		pw.println("Topic,Sentiment,TwitterText");
-		for(int i = 0; i < testList.size(); i++){
+		for(int i = 0; i < tweetList.size(); i++){
 			//count sentiment words
 			int sentimentCount = 0;
-			String text = testList.get(i).getText().replaceAll("\r", "").replaceAll("\n", "");
+			String text = tweetList.get(i).getText().replaceAll("\r", "").replaceAll("\n", "");
 			String[] words = text.split(" ");
 			for(String token : words){
 				if(negativeLexicon.contains(token))
@@ -180,13 +294,13 @@ public class LexiconSentiment {
 			}
 			
 			if(sentimentCount > 0)
-				testList.get(i).setPredictedPositive();
+				tweetList.get(i).setPredictedPositive();
 			else if(sentimentCount < 0)
-				testList.get(i).setPredictedNegative();
+				tweetList.get(i).setPredictedNegative();
 			else
-				testList.get(i).setPredictedNeutral();
+				tweetList.get(i).setPredictedNeutral();
 			
-			pw.println(testList.get(i));
+			pw.println(tweetList.get(i));
 		}
 		pw.close();
 	}
