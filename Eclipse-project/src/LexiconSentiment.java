@@ -14,6 +14,7 @@ import javax.json.JsonObject;
 class Tweet {
 	private String topic;
 	private String sentiment;
+	private String predictedSentiment;
 	private String text;
 	private String id;
 	
@@ -22,6 +23,7 @@ class Tweet {
 		sentiment = _sentiment;
 		id = _id;
 		this.retrieveTextFromJson();
+		predictedSentiment = "";
 	}
 	
 	private void retrieveTextFromJson() {
@@ -50,10 +52,36 @@ class Tweet {
 		}
 	}
 	
+	public void setPredictedSentiment(String _predictedSentiment) {
+		predictedSentiment = _predictedSentiment;
+	}
+	public void setPredictedPositive() {
+		predictedSentiment = "positive";
+	}
+	public void setPredictedNegative() {
+		predictedSentiment = "negative";
+	}
+	public void setPredictedNeutral() {
+		predictedSentiment = "neutral";
+	}
+	public void setPredictedIrrelevant() {
+		predictedSentiment = "irrelevant";
+	}
+	
 	public String getTopic() { return topic; }
 	public String getSentiment() { return sentiment; }
 	public String getText() { return text; }
 	public String getId() { return id; }
+	
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("\""+topic+"\",");
+		sb.append("\""+id+"\",");
+		sb.append("\""+sentiment+"\",");
+		sb.append("\""+predictedSentiment+"\",");
+		sb.append("\""+text+"\"");
+		return sb.toString();
+	}
 }
 
 public class LexiconSentiment {
@@ -137,8 +165,8 @@ public class LexiconSentiment {
 	public void test() throws FileNotFoundException{
 
 		FileOutputStream fout = new FileOutputStream("sentiment-result.csv");
-		PrintWriter p = new PrintWriter(fout);
-		p.println("Topic,Sentiment,TwitterText");
+		PrintWriter pw = new PrintWriter(fout);
+		pw.println("Topic,Sentiment,TwitterText");
 		for(int i = 0; i < testList.size(); i++){
 			//count sentiment words
 			int sentimentCount = 0;
@@ -151,17 +179,15 @@ public class LexiconSentiment {
 					sentimentCount++;
 			}
 			
-			p.print("\"" + testList.get(i).getTopic() + "\",");
-			//print sentiment result
 			if(sentimentCount > 0)
-				p.print("\"positive\",");
+				testList.get(i).setPredictedPositive();
 			else if(sentimentCount < 0)
-				p.print("\"negative\",");
+				testList.get(i).setPredictedNegative();
 			else
-				p.print("\"neutral\",");
-			//print tweet text
-			p.println("\"" + text + "\"");
+				testList.get(i).setPredictedNeutral();
+			
+			pw.println(testList.get(i));
 		}
-		p.close();
+		pw.close();
 	}
 }
