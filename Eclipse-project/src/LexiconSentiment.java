@@ -1,21 +1,66 @@
 import java.io.FileNotFoundException;
+
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.Vector;
+import java.util.ArrayList;
 
 import javax.json.JsonObject;
+
+
+class Tweet {
+	private String topic;
+	private String sentiment;
+	private String text;
+	private String id;
+	
+	Tweet(String _topic, String _sentiment, String _id) {
+		topic = _topic;
+		sentiment = _sentiment;
+		id = _id;
+		this.retrieveTextFromJson();
+	}
+	
+	private void retrieveTextFromJson() {
+		String tweetFname = GlobalHelper.pathToDataset + "tweets/" + id + ".json";
+		//read the tweet JSON file
+		JsonObject tweetJson = null;
+		try {
+			tweetJson = JsonFileReader.readJsonObject(tweetFname);
+		}
+		catch(Exception e) {
+			System.err.println("Error while reading JSON tweet text! Exception caught!");
+			e.printStackTrace();
+		}
+		
+		if(tweetJson == null){
+			System.err.println("fail to parse tweet json file: " + tweetFname);
+			return;
+		}
+		//get the origin tweet text from the tweet JsonObject
+		if(tweetJson.containsKey("text")){
+			text = (tweetJson.getString("text"));
+		}
+		else{
+			System.err.println("no text key in: " + tweetFname);
+			return;
+		}
+	}
+	
+	public String getTopic() { return topic; }
+	public String getSentiment() { return sentiment; }
+	public String getText() { return text; }
+	public String getId() { return id; }
+}
 
 public class LexiconSentiment {
 	private Set<String> negativeLexicon = null;
 	private Set<String> positiveLexicon = null;
-	private Vector<String[]> testElements = null;
-	private Vector<String> testTexts = null;
-	private String pathToNegativeLexicon = "../lexicon/neg.txt";
-	private String pathToPositiveLexicon = "../lexicon/pos.txt";
-	private String pathToDataset = "../sentiment-analysis-dataset-with-origin-tweet/";
+	private ArrayList<Tweet> testList = null;
+
 	/**
 	 * @param args
 	 * @throws IOException 
@@ -36,32 +81,36 @@ public class LexiconSentiment {
 		//initialize lexicon structure
 		negativeLexicon = new TreeSet<String>();
 		positiveLexicon = new TreeSet<String>();
-		//initialize testset list, which stores the test elements and the origin tweet text of test elements, respectively
-		testElements = new Vector<String[]>();
-		testTexts = new Vector<String>();
+		
+		testList = new ArrayList<Tweet>();
 	}
 	public boolean initialize() throws IOException{
-		//read in lexicon 
-		if(!initLexicon(pathToNegativeLexicon, negativeLexicon)){
-			System.err.println("fail to initialize the negative lexicon: " + pathToNegativeLexicon);
+		// Read in negative Lexicon 
+		if(!initLexicon(GlobalHelper.pathToNegativeLexicon, negativeLexicon)){
+			System.err.println("fail to initialize the negative lexicon: " + GlobalHelper.pathToNegativeLexicon);
 			return false;
-		}else{
+		}
+		else{
 			System.out.println("negative lexicon size: " + negativeLexicon.size());
 		}
-		if(!initLexicon(pathToPositiveLexicon, positiveLexicon)){
-			System.err.println("fail to initialize the positive lexicon: " + pathToPositiveLexicon);
+		// Read in positive Lexicon
+		if(!initLexicon(GlobalHelper.pathToPositiveLexicon, positiveLexicon)){
+			System.err.println("fail to initialize the positive lexicon: " + GlobalHelper.pathToPositiveLexicon);
 			return false;
-		}else{
+		}
+		else{
 			System.out.println("positive lexicon size: " + positiveLexicon.size());
 		}
+		
 		//read in test elements 
-		String testFname = pathToDataset + "testing.csv";
-		if(!readInTest(testFname)){
+		String testFname = GlobalHelper.pathToDataset + "testing.csv";
+		if(!readTestFile(testFname)){
 			System.err.println("fail to read: " + testFname);
 			System.err.println("fail to read in test elements from: " + testFname);
 			return false;
-		}else{
-			System.out.println("count of test elements: " + testElements.size());
+		}
+		else{
+			System.out.println("count of test tweets: " + testList.size());
 		}
 		return true;
 	}
@@ -76,44 +125,24 @@ public class LexiconSentiment {
 		}
 		return true;
 	}
-	private boolean readInTest(String fname) throws IOException{
+	private boolean readTestFile(String fname) throws IOException{
 		//read in csv test file
-		if(!CsvFileReader.readCsvElements(testElements, fname, 3, true)){
+		if(!CsvFileReader.readCsvElementsTweet(testList, fname, 3, true)){
 			System.err.println("fail to read in csv file: " + fname);
 			return false;
 		}
-		//extract tweet text from the respect CSV file
-		for(String[] element : testElements){
-			String currentID = element[2];
-			String tweetFname = pathToDataset + "tweets/" + currentID + ".json";
-			//read the tweet JSON file
-			JsonObject tweet = JsonFileReader.readJsonObject(tweetFname);
-			if(tweet == null){
-				System.err.println("fail to parse tweet json file: " + tweetFname);
-				return false;
-			}
-			//get the origin tweet text from the tweet JsonObject
-			if(tweet.containsKey("text")){
-				testTexts.add(tweet.getString("text"));
-			}else{
-				System.err.println("no text key in: " + tweetFname);
-				return false;
-			}
-		}
 		return true;
 	}
+	
 	public void test() throws FileNotFoundException{
-		if(testTexts.size() != testElements.size()){
-			System.err.println("#test texts: " + testTexts.size() + " ||| #test elements: " + testElements.size() + " not equal");
-			return;
-		}
+
 		FileOutputStream fout = new FileOutputStream("sentiment-result.csv");
 		PrintWriter p = new PrintWriter(fout);
 		p.println("Topic,Sentiment,TwitterText");
-		for(int i = 0; i < testTexts.size(); i++){
+		for(int i = 0; i < testList.size(); i++){
 			//count sentiment words
 			int sentimentCount = 0;
-			String text = testTexts.get(i).replaceAll("\r", "").replaceAll("\n", "");
+			String text = testList.get(i).getText().replaceAll("\r", "").replaceAll("\n", "");
 			String[] words = text.split(" ");
 			for(String token : words){
 				if(negativeLexicon.contains(token))
@@ -121,9 +150,8 @@ public class LexiconSentiment {
 				if(positiveLexicon.contains(token))
 					sentimentCount++;
 			}
-			//print the result
-			//print topic
-			p.print("\"" + testElements.get(i)[0] + "\",");
+			
+			p.print("\"" + testList.get(i).getTopic() + "\",");
 			//print sentiment result
 			if(sentimentCount > 0)
 				p.print("\"positive\",");

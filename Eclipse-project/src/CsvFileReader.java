@@ -1,12 +1,12 @@
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import com.opencsv.CSVReader;
 
 
 public class CsvFileReader {
-	public static boolean readCsvElements(Vector<String[]> csvElements, String fname, int fieldCount, boolean withHead) throws IOException{
+	public static boolean readCsvElementsTweet(ArrayList<Tweet> tweetList, String fname, int fieldCount, boolean withHead) throws IOException{
 		CSVReader reader = new CSVReader(new FileReader(fname));
 		String[] tokens;
 		int index = 0;
@@ -20,7 +20,7 @@ public class CsvFileReader {
 			if(withHead && index == 0){
 				;
 			}else{
-				csvElements.add(tokens);
+				tweetList.add(new Tweet(tokens[0], tokens[1], tokens[2]));
 			}
 			index++;
 		}
