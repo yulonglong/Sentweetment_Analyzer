@@ -73,6 +73,11 @@ class Tweet {
 	public String getText() { return text; }
 	public String getId() { return id; }
 	
+	public boolean isPredictionCorrect() {
+		if (sentiment.equalsIgnoreCase(predictedSentiment)) return true;
+		return false;
+	}
+	
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("\""+topic+"\",");
@@ -101,7 +106,7 @@ public class LexiconSentiment {
 		if(!sentimenter.initialize()){
 			System.err.println("fail to initialize the sentimenter");
 		}else{
-			sentimenter.test();
+			sentimenter.tenFoldCrossValidation();
 		}
 	}
 
@@ -133,7 +138,7 @@ public class LexiconSentiment {
 		
 		//read in training elements 
 		String trainFname = GlobalHelper.pathToDataset + "training.csv";
-		if(!readTestFile(trainFname)){
+		if(!readTweetHeaderFile(trainFname)){
 			System.err.println("fail to read: " + trainFname);
 			System.err.println("fail to read in train elements from: " + trainFname);
 			return false;
@@ -144,7 +149,7 @@ public class LexiconSentiment {
 		
 		//read in test elements 
 		String testFname = GlobalHelper.pathToDataset + "testing.csv";
-		if(!readTestFile(testFname)){
+		if(!readTweetHeaderFile(testFname)){
 			System.err.println("fail to read: " + testFname);
 			System.err.println("fail to read in test elements from: " + testFname);
 			return false;
@@ -169,7 +174,7 @@ public class LexiconSentiment {
 		}
 		return true;
 	}
-	private boolean readTestFile(String fname) throws IOException{
+	private boolean readTweetHeaderFile(String fname) throws IOException{
 		//read in csv test file
 		if(!CsvFileReader.readCsvElementsTweet(tweetList, fname, 3, true)){
 			System.err.println("fail to read in csv file: " + fname);
@@ -276,32 +281,89 @@ public class LexiconSentiment {
 		System.out.println("End 10-fold partitioning....\n");
 	}
 	
-	public void test() throws FileNotFoundException{
-
-		FileOutputStream fout = new FileOutputStream("sentiment-result.csv");
-		PrintWriter pw = new PrintWriter(fout);
-		pw.println("Topic,Sentiment,TwitterText");
-		for(int i = 0; i < tweetList.size(); i++){
-			//count sentiment words
-			int sentimentCount = 0;
-			String text = tweetList.get(i).getText().replaceAll("\r", "").replaceAll("\n", "");
-			String[] words = text.split(" ");
-			for(String token : words){
-				if(negativeLexicon.contains(token))
-					sentimentCount--;
-				if(positiveLexicon.contains(token))
-					sentimentCount++;
+	public void tenFoldCrossValidation() throws FileNotFoundException{
+		int overallCorrect = 0;
+		int overallWrong = 0;
+		
+		for(int fold=0;fold<10;fold++) {
+			ArrayList<Tweet> trainingList = new ArrayList<Tweet>();
+			ArrayList<Tweet> testList = new ArrayList<Tweet>();
+			// fold 0 use partition 0 as test set, etc
+			for(int i=0;i<10;i++){
+				if (fold == i) {
+					for(int j=0;j<tweetListPartition.get(i).size();j++){
+						testList.add(tweetListPartition.get(i).get(j));
+					}
+				}
+				else {
+					for(int j=0;j<tweetListPartition.get(i).size();j++){
+						trainingList.add(tweetListPartition.get(i).get(j));
+					}
+				}
 			}
 			
-			if(sentimentCount > 0)
-				tweetList.get(i).setPredictedPositive();
-			else if(sentimentCount < 0)
-				tweetList.get(i).setPredictedNegative();
-			else
-				tweetList.get(i).setPredictedNeutral();
+			// For each tweet in training set
+			// Train the classifier
+			// ---- train code here ------
 			
-			pw.println(tweetList.get(i));
+			
+			// For each tweet in the test set
+			// Test the classifier
+			
+			int correctPrediction = 0;
+			int wrongPrediction = 0;
+			
+			FileOutputStream fout = new FileOutputStream("sentiment-result-fold"+fold+".csv");
+			PrintWriter pw = new PrintWriter(fout);
+			for(int i = 0; i < testList.size(); i++){
+				//count sentiment words
+				int sentimentCount = 0;
+				String text = testList.get(i).getText().replaceAll("\r", "").replaceAll("\n", "");
+				String[] words = text.split(" ");
+				for(String token : words){
+					if(negativeLexicon.contains(token))
+						sentimentCount--;
+					if(positiveLexicon.contains(token))
+						sentimentCount++;
+				}
+				
+				if(sentimentCount > 0)
+					testList.get(i).setPredictedPositive();
+				else if(sentimentCount < 0)
+					testList.get(i).setPredictedNegative();
+				else
+					testList.get(i).setPredictedNeutral();
+				
+				pw.println(testList.get(i));
+				
+				if (testList.get(i).isPredictionCorrect()) correctPrediction++;
+				else wrongPrediction++;
+			}
+			
+			overallCorrect += correctPrediction;
+			overallWrong += wrongPrediction;
+			
+			double accuracy = ((double)correctPrediction/(double)(correctPrediction+wrongPrediction));
+			System.out.println("============");
+			System.out.println("Fold " + fold);
+			System.out.println("Correct : " + correctPrediction);
+			System.out.println("Wrong   : " + wrongPrediction);
+			System.out.println("Total   : " + (correctPrediction+wrongPrediction));
+			System.out.println("Accuracy: " + accuracy);
+			
+			pw.println("Correct : " + correctPrediction);
+			pw.println("Wrong   : " + wrongPrediction);
+			pw.println("Total   : " + (correctPrediction+wrongPrediction));
+			pw.println("Accuracy: " + accuracy);
+			pw.close();
 		}
-		pw.close();
+		
+		double overallAccuracy = ((double)overallCorrect/(double)(overallCorrect+overallWrong));
+		System.out.println("============");
+		System.out.println("Overall");
+		System.out.println("Correct : " + overallCorrect);
+		System.out.println("Wrong   : " + overallWrong);
+		System.out.println("Total   : " + (overallCorrect+overallWrong));
+		System.out.println("Accuracy: " + overallAccuracy);
 	}
 }
