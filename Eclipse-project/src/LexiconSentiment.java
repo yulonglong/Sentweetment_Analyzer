@@ -8,87 +8,6 @@ import java.util.TreeSet;
 import java.util.Vector;
 import java.util.ArrayList;
 
-import javax.json.JsonObject;
-
-
-class Tweet {
-	private String topic;
-	private String sentiment;
-	private String predictedSentiment;
-	private String text;
-	private String id;
-	
-	Tweet(String _topic, String _sentiment, String _id) {
-		topic = _topic;
-		sentiment = _sentiment;
-		id = _id;
-		this.retrieveTextFromJson();
-		predictedSentiment = "";
-	}
-	
-	private void retrieveTextFromJson() {
-		String tweetFname = GlobalHelper.pathToDataset + "tweets/" + id + ".json";
-		//read the tweet JSON file
-		JsonObject tweetJson = null;
-		try {
-			tweetJson = JsonFileReader.readJsonObject(tweetFname);
-		}
-		catch(Exception e) {
-			System.err.println("Error while reading JSON tweet text! Exception caught!");
-			e.printStackTrace();
-		}
-		
-		if(tweetJson == null){
-			System.err.println("fail to parse tweet json file: " + tweetFname);
-			return;
-		}
-		//get the origin tweet text from the tweet JsonObject
-		if(tweetJson.containsKey("text")){
-			text = (tweetJson.getString("text"));
-		}
-		else{
-			System.err.println("no text key in: " + tweetFname);
-			return;
-		}
-	}
-	
-	public void setPredictedSentiment(String _predictedSentiment) {
-		predictedSentiment = _predictedSentiment;
-	}
-	public void setPredictedPositive() {
-		predictedSentiment = "positive";
-	}
-	public void setPredictedNegative() {
-		predictedSentiment = "negative";
-	}
-	public void setPredictedNeutral() {
-		predictedSentiment = "neutral";
-	}
-	public void setPredictedIrrelevant() {
-		predictedSentiment = "irrelevant";
-	}
-	
-	public String getTopic() { return topic; }
-	public String getSentiment() { return sentiment; }
-	public String getText() { return text; }
-	public String getId() { return id; }
-	
-	public boolean isPredictionCorrect() {
-		if (sentiment.equalsIgnoreCase(predictedSentiment)) return true;
-		return false;
-	}
-	
-	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append("\""+topic+"\",");
-		sb.append("\""+id+"\",");
-		sb.append("\""+sentiment+"\",");
-		sb.append("\""+predictedSentiment+"\",");
-		sb.append("\""+text+"\"");
-		return sb.toString();
-	}
-}
-
 public class LexiconSentiment {
 	private Set<String> negativeLexicon = null;
 	private Set<String> positiveLexicon = null;
@@ -305,6 +224,11 @@ public class LexiconSentiment {
 			// For each tweet in training set
 			// Train the classifier
 			// ---- train code here ------
+			String trainFilename = "train"+fold+".txt";
+			String testFilename = "test"+fold+".txt";
+			MaxentHelper.createPropUnigram();
+			MaxentHelper.createFileUnigram(trainingList, trainFilename);
+			MaxentHelper.createFileUnigram(testList, testFilename);
 			
 			
 			// For each tweet in the test set
@@ -312,33 +236,38 @@ public class LexiconSentiment {
 			
 			int correctPrediction = 0;
 			int wrongPrediction = 0;
+//			
+//			FileOutputStream fout = new FileOutputStream("sentiment-result-fold"+fold+".csv");
+//			PrintWriter pw = new PrintWriter(fout);
+//			for(int i = 0; i < testList.size(); i++){
+//				//count sentiment words
+//				int sentimentCount = 0;
+//				String text = testList.get(i).getText().replaceAll("\r", "").replaceAll("\n", "");
+//				String[] words = text.split(" ");
+//				for(String token : words){
+//					if(negativeLexicon.contains(token))
+//						sentimentCount--;
+//					if(positiveLexicon.contains(token))
+//						sentimentCount++;
+//				}
+//				
+//				if(sentimentCount > 0)
+//					testList.get(i).setPredictedPositive();
+//				else if(sentimentCount < 0)
+//					testList.get(i).setPredictedNegative();
+//				else
+//					testList.get(i).setPredictedNeutral();
+//				
+//				pw.println(testList.get(i));
+//				
+//				if (testList.get(i).isPredictionCorrect()) correctPrediction++;
+//				else wrongPrediction++;
+//			}
 			
-			FileOutputStream fout = new FileOutputStream("sentiment-result-fold"+fold+".csv");
-			PrintWriter pw = new PrintWriter(fout);
-			for(int i = 0; i < testList.size(); i++){
-				//count sentiment words
-				int sentimentCount = 0;
-				String text = testList.get(i).getText().replaceAll("\r", "").replaceAll("\n", "");
-				String[] words = text.split(" ");
-				for(String token : words){
-					if(negativeLexicon.contains(token))
-						sentimentCount--;
-					if(positiveLexicon.contains(token))
-						sentimentCount++;
-				}
-				
-				if(sentimentCount > 0)
-					testList.get(i).setPredictedPositive();
-				else if(sentimentCount < 0)
-					testList.get(i).setPredictedNegative();
-				else
-					testList.get(i).setPredictedNeutral();
-				
-				pw.println(testList.get(i));
-				
-				if (testList.get(i).isPredictionCorrect()) correctPrediction++;
-				else wrongPrediction++;
-			}
+			int count[] = MaxentHelper.classify(trainFilename, testFilename);
+			correctPrediction = count[0];
+			wrongPrediction = count[1];
+			
 			
 			overallCorrect += correctPrediction;
 			overallWrong += wrongPrediction;
@@ -351,11 +280,11 @@ public class LexiconSentiment {
 			System.out.println("Total   : " + (correctPrediction+wrongPrediction));
 			System.out.println("Accuracy: " + accuracy);
 			
-			pw.println("Correct : " + correctPrediction);
-			pw.println("Wrong   : " + wrongPrediction);
-			pw.println("Total   : " + (correctPrediction+wrongPrediction));
-			pw.println("Accuracy: " + accuracy);
-			pw.close();
+//			pw.println("Correct : " + correctPrediction);
+//			pw.println("Wrong   : " + wrongPrediction);
+//			pw.println("Total   : " + (correctPrediction+wrongPrediction));
+//			pw.println("Accuracy: " + accuracy);
+//			pw.close();
 		}
 		
 		double overallAccuracy = ((double)overallCorrect/(double)(overallCorrect+overallWrong));
