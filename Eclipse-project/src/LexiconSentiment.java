@@ -221,53 +221,14 @@ public class LexiconSentiment {
 				}
 			}
 			
-			// For each tweet in training set
-			// Train the classifier
-			// ---- train code here ------
 			String trainFilename = "train"+fold+".txt";
 			String testFilename = "test"+fold+".txt";
-			MaxentHelper.createPropUnigram();
 			MaxentHelper.createFileUnigram(trainingList, trainFilename);
 			MaxentHelper.createFileUnigram(testList, testFilename);
-			
-			
-			// For each tweet in the test set
-			// Test the classifier
-			
-			int correctPrediction = 0;
-			int wrongPrediction = 0;
-//			
-//			FileOutputStream fout = new FileOutputStream("sentiment-result-fold"+fold+".csv");
-//			PrintWriter pw = new PrintWriter(fout);
-//			for(int i = 0; i < testList.size(); i++){
-//				//count sentiment words
-//				int sentimentCount = 0;
-//				String text = testList.get(i).getText().replaceAll("\r", "").replaceAll("\n", "");
-//				String[] words = text.split(" ");
-//				for(String token : words){
-//					if(negativeLexicon.contains(token))
-//						sentimentCount--;
-//					if(positiveLexicon.contains(token))
-//						sentimentCount++;
-//				}
-//				
-//				if(sentimentCount > 0)
-//					testList.get(i).setPredictedPositive();
-//				else if(sentimentCount < 0)
-//					testList.get(i).setPredictedNegative();
-//				else
-//					testList.get(i).setPredictedNeutral();
-//				
-//				pw.println(testList.get(i));
-//				
-//				if (testList.get(i).isPredictionCorrect()) correctPrediction++;
-//				else wrongPrediction++;
-//			}
-			
-			int count[] = MaxentHelper.classify(trainFilename, testFilename);
-			correctPrediction = count[0];
-			wrongPrediction = count[1];
-			
+
+			int count[] = MaxentHelper.classify(trainFilename, testFilename, fold);
+			int correctPrediction = count[0];
+			int wrongPrediction = count[1];
 			
 			overallCorrect += correctPrediction;
 			overallWrong += wrongPrediction;
