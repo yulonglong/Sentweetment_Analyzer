@@ -5,5 +5,8 @@
 	<classpathentry kind="lib" path="lib/opencsv-3.6.jar"/>
 	<classpathentry kind="lib" path="lib/javax.json-1.0.4.jar"/>
 	<classpathentry kind="lib" path="lib/javax.json-api-1.0.jar"/>
+	<classpathentry kind="lib" path="lib/stanford-corenlp-3.6.0.jar"/>
+	<classpathentry kind="lib" path="lib/slf4j-api.jar"/>
+	<classpathentry kind="lib" path="lib/slf4j-simple.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
