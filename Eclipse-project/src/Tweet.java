@@ -64,7 +64,7 @@ public class Tweet {
 	
 	public String getTextOneLine() {
 		String processedText =  text.replaceAll("(?:(?:\\r\\n)|(?:\\r)|(?:\\n))+", " | ");
-		return processedText.replaceAll("\\t+", "\\s");
+		return processedText.replaceAll("\\t+", " ");
 	}
 	
 	public boolean isPredictionCorrect() {
