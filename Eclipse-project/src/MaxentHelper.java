@@ -31,6 +31,8 @@ public class MaxentHelper {
 			PrintWriter pw = new PrintWriter(prop);
 			pw.println("useClassFeature=true");
 			pw.println("1.useNGrams=false");
+			pw.println("1.splitWordsRegexp = \\\\s+");
+			pw.println("1.useSplitWords = true");
 			pw.println("2.useNGrams=false");
 			pw.println("2.splitWordsRegexp = \\\\s+");
 			pw.println("2.useSplitWords = true");
@@ -60,6 +62,8 @@ public class MaxentHelper {
 			PrintWriter pw = new PrintWriter(prop);
 			pw.println("useClassFeature=true");
 			pw.println("1.useNGrams=false");
+			pw.println("1.splitWordsRegexp = \\\\s+");
+			pw.println("1.useSplitWords = true");
 			pw.println("2.splitWordsRegexp = \\\\s+");
 			pw.println("2.useSplitWords = true");
 			pw.println("2.useNGrams=true");
