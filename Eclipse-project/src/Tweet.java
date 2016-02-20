@@ -44,6 +44,9 @@ public class Tweet {
 			String rawText = (tweetJson.getString("text"));
 			text = rawText.replaceAll("(?:(?:\\r\\n)|(?:\\r)|(?:\\n))+", " | ");
 			text =  text.replaceAll("\\t+", " ");
+			
+			String urlRegex = "(?:http:\\/\\/t\\.co\\/[A-Za-z0-9]+)";
+			text =  text.replaceAll(urlRegex, " [url] ");
 		}
 		else{
 			System.err.println("no text key in: " + tweetFname);
