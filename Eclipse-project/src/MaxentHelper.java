@@ -30,12 +30,26 @@ public class MaxentHelper {
 			File prop = new File(currPathStr+"/"+s_maxentFolderName+"/"+s_propFileName);
 			PrintWriter pw = new PrintWriter(prop);
 			pw.println("useClassFeature=true");
+			// Topic
 			pw.println("1.useNGrams=false");
 			pw.println("1.splitWordsRegexp = \\\\s+");
 			pw.println("1.useSplitWords = true");
+			// Tweet text
 			pw.println("2.useNGrams=false");
 			pw.println("2.splitWordsRegexp = \\\\s+");
 			pw.println("2.useSplitWords = true");
+			// Positive Lexicon Count
+			pw.println("3.realValued = true");
+			// Negative Lexicon Count
+			pw.println("4.realValued = true");
+			// Positive Lexicon Words
+			pw.println("5.useNGrams=false");
+			pw.println("5.splitWordsRegexp = \\\\s+");
+			pw.println("5.useSplitWords = true");
+			// Negative Lexicon Words
+			pw.println("6.useNGrams=false");
+			pw.println("6.splitWordsRegexp = \\\\s+");
+			pw.println("6.useSplitWords = true");
 			pw.println("goldAnswerColumn=0");
 			pw.println("intern=true");
 			pw.println("sigma=3");
@@ -61,9 +75,13 @@ public class MaxentHelper {
 			File prop = new File(currPathStr+"/"+s_maxentFolderName+"/"+s_propFileName);
 			PrintWriter pw = new PrintWriter(prop);
 			pw.println("useClassFeature=true");
+			
+			// Topic
 			pw.println("1.useNGrams=false");
 			pw.println("1.splitWordsRegexp = \\\\s+");
 			pw.println("1.useSplitWords = true");
+			
+			// Tweet text
 			pw.println("2.splitWordsRegexp = \\\\s+");
 			pw.println("2.useSplitWords = true");
 			pw.println("2.useNGrams=true");
@@ -71,6 +89,23 @@ public class MaxentHelper {
 			pw.println("2.maxNGramLeng=4");
 			pw.println("2.minNGramLeng=1");
 			pw.println("2.binnedLengths=10,20,30");
+			
+			// Positive Lexicon Count
+			pw.println("3.realValued = true");
+			
+			// Negative Lexicon Count
+			pw.println("4.realValued = true");
+			
+			// Positive Lexicon Words
+			pw.println("5.useNGrams=false");
+			pw.println("5.splitWordsRegexp = \\\\s+");
+			pw.println("5.useSplitWords = true");
+			
+			// Negative Lexicon Words
+			pw.println("6.useNGrams=false");
+			pw.println("6.splitWordsRegexp = \\\\s+");
+			pw.println("6.useSplitWords = true");
+			
 			pw.println("goldAnswerColumn=0");
 			pw.println("intern=true");
 			pw.println("sigma=3");
@@ -95,7 +130,11 @@ public class MaxentHelper {
 				Tweet currTweet = tweetList.get(i);
 				pw.print(currTweet.getSentiment()+"\t");
 				pw.print(currTweet.getTopic()+"\t");
-				pw.print(currTweet.getTextOneLine());
+				pw.print(currTweet.getText()+"\t");
+				pw.print(currTweet.getPositiveLexiconCount()+"\t");
+				pw.print(currTweet.getNegativeLexiconCount()+"\t");
+				pw.print(currTweet.getPositiveLexiconTokens()+"\t");
+				pw.print(currTweet.getNegativeLexiconTokens());
 				pw.println();
 				pw.flush();
 			}

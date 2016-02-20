@@ -1,16 +1,14 @@
 import java.io.FileNotFoundException;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.Vector;
 import java.util.ArrayList;
 
 public class LexiconSentiment {
-	private Set<String> negativeLexicon = null;
-	private Set<String> positiveLexicon = null;
+	public static Set<String> s_negativeLexicon = null;
+	public static Set<String> s_positiveLexicon = null;
 	private ArrayList<Tweet> tweetList = null;
 	private ArrayList<ArrayList<Tweet> > tweetListPartition = null;
 
@@ -32,27 +30,27 @@ public class LexiconSentiment {
 	public LexiconSentiment(){
 		// TODO Auto-generated constructor stub
 		//initialize lexicon structure
-		negativeLexicon = new TreeSet<String>();
-		positiveLexicon = new TreeSet<String>();
+		s_negativeLexicon = new TreeSet<String>();
+		s_positiveLexicon = new TreeSet<String>();
 		
 		tweetList = new ArrayList<Tweet>();
 	}
 	public boolean initialize() throws IOException{
 		// Read in negative Lexicon 
-		if(!initLexicon(GlobalHelper.pathToNegativeLexicon, negativeLexicon)){
+		if(!initLexicon(GlobalHelper.pathToNegativeLexicon, s_negativeLexicon)){
 			System.err.println("fail to initialize the negative lexicon: " + GlobalHelper.pathToNegativeLexicon);
 			return false;
 		}
 		else{
-			System.out.println("negative lexicon size: " + negativeLexicon.size());
+			System.out.println("negative lexicon size: " + s_negativeLexicon.size());
 		}
 		// Read in positive Lexicon
-		if(!initLexicon(GlobalHelper.pathToPositiveLexicon, positiveLexicon)){
+		if(!initLexicon(GlobalHelper.pathToPositiveLexicon, s_positiveLexicon)){
 			System.err.println("fail to initialize the positive lexicon: " + GlobalHelper.pathToPositiveLexicon);
 			return false;
 		}
 		else{
-			System.out.println("positive lexicon size: " + positiveLexicon.size());
+			System.out.println("positive lexicon size: " + s_positiveLexicon.size());
 		}
 		
 		//read in training elements 
