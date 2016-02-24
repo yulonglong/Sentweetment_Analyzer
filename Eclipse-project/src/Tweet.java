@@ -1,6 +1,8 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import javax.json.JsonArray;
 import javax.json.JsonObject;
 
 public class Tweet {
@@ -9,6 +11,14 @@ public class Tweet {
 	private String predictedSentiment;
 	private String text;
 	private String id;
+	
+	private List<String> hashtags;
+	private int retweets;
+	private String timezone;
+	private int friendsCount; // The number of users this account is following (AKA their ¡°followings¡±)
+	private int followersCount; // The number of followers this account currently has. 
+	private int favouritesCount; // The number of tweets this user has favorited in the account¡¯s lifetime.
+	
 	private List<String> positiveLexiconList;
 	private List<String> negativeLexiconList;
 	private int positiveLexiconCount;
@@ -18,12 +28,13 @@ public class Tweet {
 		topic = _topic;
 		sentiment = _sentiment;
 		id = _id;
-		this.retrieveTextFromJson();
+		hashtags = new ArrayList<String>();
+		this.extractFeaturesFromJson();
 		this.processLexicon();
 		predictedSentiment = "";
 	}
 	
-	private void retrieveTextFromJson() {
+	private void extractFeaturesFromJson() {
 		String tweetFname = GlobalHelper.pathToDataset + "tweets/" + id + ".json";
 		//read the tweet JSON file
 		JsonObject tweetJson = null;
@@ -52,6 +63,31 @@ public class Tweet {
 			System.err.println("no text key in: " + tweetFname);
 			return;
 		}
+		
+		// get the hashtags information from the tweet JsonObject
+		JsonArray hashtagsArray = tweetJson.getJsonObject("entities").getJsonArray("hashtags");
+		for (int i = 0; i < hashtagsArray.size(); i++) {
+			hashtags.add(hashtagsArray.getJsonObject(i).getString("text"));
+		}
+		
+		//get the retweets information
+		retweets = tweetJson.getInt("retweet_count");
+		
+		//get the timezone information, can be null
+		if (!tweetJson.getJsonObject("user").isNull("time_zone")) {
+			timezone = tweetJson.getJsonObject("user").getString("time_zone");			
+		} else {
+			timezone = "null";
+		}
+			
+		// get friendscount
+		friendsCount = tweetJson.getJsonObject("user").getInt("friends_count");
+		
+		// get followersscount
+		followersCount = tweetJson.getJsonObject("user").getInt("followers_count");
+		
+		// get favouritescount
+		favouritesCount = tweetJson.getJsonObject("user").getInt("favourites_count");
 	}
 	
 	private void processLexicon() {
