@@ -7,6 +7,12 @@ import java.io.PrintWriter;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 import edu.stanford.nlp.classify.Classifier;
 import edu.stanford.nlp.classify.LinearClassifier;
@@ -30,6 +36,9 @@ public class MaxentHelper {
 			File prop = new File(currPathStr+"/"+s_maxentFolderName+"/"+s_propFileName);
 			PrintWriter pw = new PrintWriter(prop);
 			pw.println("useClassFeature=true");
+			// pw.println("trainFromSVMLight = true");
+			// pw.println("testFromSVMLight = true");
+			
 			// Topic
 			pw.println("1.useNGrams=false");
 			pw.println("1.splitWordsRegexp = \\\\s+");
@@ -85,10 +94,10 @@ public class MaxentHelper {
 			pw.println("2.splitWordsRegexp = \\\\s+");
 			pw.println("2.useSplitWords = true");
 			pw.println("2.useNGrams=true");
-			pw.println("2.usePrefixSuffixNGrams=true");
+			// pw.println("2.usePrefixSuffixNGrams=true");
 			pw.println("2.maxNGramLeng=4");
 			pw.println("2.minNGramLeng=1");
-			pw.println("2.binnedLengths=10,20,30");
+			// pw.println("2.binnedLengths=10,20,30");
 			
 			// Positive Lexicon Count
 			pw.println("3.realValued = true");
@@ -119,7 +128,7 @@ public class MaxentHelper {
 		}
 	}
 	
-	public static void createFileUnigram(ArrayList<Tweet> tweetList, String filename) {
+	public static void createMaxentFile(ArrayList<Tweet> tweetList, String filename) {
 		Path currentRelativePath = Paths.get("");
 		String currPathStr = currentRelativePath.toAbsolutePath().toString();
 		File file = new File(currPathStr+"/"+s_maxentFolderName+"/"+filename);
@@ -199,12 +208,13 @@ public class MaxentHelper {
 	
 	// count[0] = correct prediction
 	// count[1] = wrong prediction
-	public static int[] classify(String trainFilename, String testFilename, int fold) {
-		createPropUnigram();
-		// createPropNgram();
+	public static TreeMap<String,Integer> classify(String trainFilename, String testFilename, int fold) {
+		// createPropUnigram();
+		createPropNgram();
 		
-		int[] count = new int[2];
-		count[0] = count[1] = 0;
+		// confusion matrix
+		TreeMap<String, Integer> cm = new TreeMap<String,Integer>();
+		int total = 0;
 		
 		Path currentRelativePath = Paths.get("");
 		String currPathStr = currentRelativePath.toAbsolutePath().toString();
@@ -223,12 +233,26 @@ public class MaxentHelper {
 
 			Datum<String,String> d = cdc.makeDatumFromLine(line);
 			String predictedAnswer = cl.classOf(d);
-
-			if (correctAnswer.equals(predictedAnswer)) count[0]++;
-			else count[1]++;	
+			
+			
+			// Evaluation
+			if (correctAnswer.equals(predictedAnswer)) {
+				Integer freq = cm.get(correctAnswer+" TP");
+				if (freq == null) cm.put(correctAnswer+" TP",1);
+				else cm.put(correctAnswer+" TP",freq+1);
+			}
+			else {
+				Integer freqFN = cm.get(correctAnswer+" FN");
+				if (freqFN == null) cm.put(correctAnswer+" FN",1);
+				else cm.put(correctAnswer+" FN",freqFN+1);
+				
+				Integer freqFP = cm.get(predictedAnswer+" FP");
+				if (freqFP == null) cm.put(predictedAnswer+" FP",1);
+				else cm.put(predictedAnswer+" FP",freqFP+1);
+			}
+			total++;
 		}
-		
-		
-		return count;
+		cm.put("total",total);
+		return cm;
 	}
 }

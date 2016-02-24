@@ -2,9 +2,11 @@ import java.io.FileNotFoundException;
 
 import java.io.IOException;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Vector;
 import java.util.ArrayList;
+import java.util.Map;
 
 public class LexiconSentiment {
 	public static Set<String> s_negativeLexicon = null;
@@ -198,10 +200,62 @@ public class LexiconSentiment {
 		System.out.println("End 10-fold partitioning....\n");
 	}
 	
+	private void printCMPerformance2(String currLabel, int tp, int fp, int fn) {
+		double recall = (double)tp/((double)tp+(double)fn);
+		double precision = (double)tp/((double)tp+(double)fp);
+		double f1score = 2.0*precision*recall/(precision+recall);
+
+		System.out.println(currLabel + " TP " + " = " + tp);
+		System.out.println(currLabel + " FP " + " = " + fp);
+		System.out.println(currLabel + " FN " + " = " + fn);
+		System.out.println(currLabel + " Recall " + " = " + (double)Math.round(recall * 10000d) / 10000d);
+		System.out.println(currLabel + " Precision " + " = " + (double)Math.round(precision * 10000d) / 10000d);
+		System.out.println(currLabel + " F1-Score " + " = " + (double)Math.round(f1score * 10000d) / 10000d);
+		System.out.println();
+	}
+	
+	private void printCMPerformance(TreeMap<String, Integer> cm) {
+
+		int globalTp, globalFp, globalFn;
+		globalTp = globalFp = globalFn = 0;
+		int tp,fp,fn;
+		tp = fp = fn = 0;
+		String prevLabel = "";
+		for(Map.Entry<String,Integer> entry : cm.entrySet()) {
+			String key = entry.getKey();
+			Integer value = entry.getValue();
+			
+			if (key.equals("total")) continue;
+			
+			String[] currLabel = key.split("\\s");
+			if (!currLabel[0].equals(prevLabel)) {
+				//calculate
+				if (prevLabel.length()>0) printCMPerformance2(prevLabel, tp, fp , fn);
+
+				globalTp += tp; globalFp += fp; globalFn += fn;
+				tp = fp = fn = 0;
+				prevLabel = currLabel[0];
+			}
+			String currCategory = currLabel[1];
+			if (currCategory.equals("TP")) tp = value;
+			else if (currCategory.equals("FN")) fn = value;
+			else if (currCategory.equals("FP")) fp = value;
+		}
+		printCMPerformance2(prevLabel, tp, fp , fn);
+
+		globalTp += tp; globalFp += fp; globalFn += fn;
+		printCMPerformance2("Overall", globalTp,globalFp,globalFn);
+
+		System.out.println("Total = "+cm.get("total"));
+	}
+	
+	public void printGlobalCMPerformance() {
+		printCMPerformance(globalCm);	
+	}
+	
+	private TreeMap<String, Integer> globalCm = new TreeMap<String,Integer>();
+	
 	public void tenFoldCrossValidation() throws FileNotFoundException{
-		int overallCorrect = 0;
-		int overallWrong = 0;
-		
 		for(int fold=0;fold<10;fold++) {
 			ArrayList<Tweet> trainingList = new ArrayList<Tweet>();
 			ArrayList<Tweet> testList = new ArrayList<Tweet>();
@@ -221,37 +275,24 @@ public class LexiconSentiment {
 			
 			String trainFilename = "train"+fold+".txt";
 			String testFilename = "test"+fold+".txt";
-			MaxentHelper.createFileUnigram(trainingList, trainFilename);
-			MaxentHelper.createFileUnigram(testList, testFilename);
+			MaxentHelper.createMaxentFile(trainingList, trainFilename);
+			MaxentHelper.createMaxentFile(testList, testFilename);
 
-			int count[] = MaxentHelper.classify(trainFilename, testFilename, fold);
-			int correctPrediction = count[0];
-			int wrongPrediction = count[1];
+			// Classify and evaluate
+			TreeMap<String,Integer> cm = MaxentHelper.classify(trainFilename, testFilename, fold);
+			for(Map.Entry<String,Integer> entry : cm.entrySet()) {
+				String key = entry.getKey();
+				Integer value = entry.getValue();
+				
+				Integer globalValue = globalCm.get(key);
+				if (globalValue == null) globalCm.put(key, value);
+				else globalCm.put(key, value + globalValue);
+			}
 			
-			overallCorrect += correctPrediction;
-			overallWrong += wrongPrediction;
-			
-			double accuracy = ((double)correctPrediction/(double)(correctPrediction+wrongPrediction));
-			System.out.println("============");
-			System.out.println("Fold " + fold);
-			System.out.println("Correct : " + correctPrediction);
-			System.out.println("Wrong   : " + wrongPrediction);
-			System.out.println("Total   : " + (correctPrediction+wrongPrediction));
-			System.out.println("Accuracy: " + accuracy);
-			
-//			pw.println("Correct : " + correctPrediction);
-//			pw.println("Wrong   : " + wrongPrediction);
-//			pw.println("Total   : " + (correctPrediction+wrongPrediction));
-//			pw.println("Accuracy: " + accuracy);
-//			pw.close();
+			printCMPerformance(cm);
 		}
-		
-		double overallAccuracy = ((double)overallCorrect/(double)(overallCorrect+overallWrong));
-		System.out.println("============");
-		System.out.println("Overall");
-		System.out.println("Correct : " + overallCorrect);
-		System.out.println("Wrong   : " + overallWrong);
-		System.out.println("Total   : " + (overallCorrect+overallWrong));
-		System.out.println("Accuracy: " + overallAccuracy);
+
+		System.out.println("==========================================");
+		printGlobalCMPerformance();
 	}
 }
