@@ -1,6 +1,8 @@
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
@@ -59,6 +61,35 @@ public class MaxentHelper {
 			pw.println("6.useNGrams=false");
 			pw.println("6.splitWordsRegexp = \\\\s+");
 			pw.println("6.useSplitWords = true");
+			pw.println("goldAnswerColumn=0");
+			pw.println("intern=true");
+			pw.println("sigma=3");
+			pw.println("useQN=true");
+			pw.println("QNsize=15");
+			pw.println("tolerance=1e-4");
+			pw.close();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static void createPropUnigramSVM() {
+		Path currentRelativePath = Paths.get("");
+		String currPathStr = currentRelativePath.toAbsolutePath().toString();
+		
+		// Make folder if doesnt exist
+		File folder = new File(currPathStr+"/"+s_maxentFolderName+"/");
+		folder.mkdirs();
+		
+		try {
+			File prop = new File(currPathStr+"/"+s_maxentFolderName+"/"+s_propFileName);
+			PrintWriter pw = new PrintWriter(prop);
+			pw.println("useClassFeature=true");
+			pw.println("1.trainFromSVMLight = true");
+			pw.println("1.testFromSVMLight = true");
+			
+
 			pw.println("goldAnswerColumn=0");
 			pw.println("intern=true");
 			pw.println("sigma=3");
@@ -153,7 +184,7 @@ public class MaxentHelper {
 			e.printStackTrace();
 		}
 	}
-	
+
 	private static void printClassifier(Classifier<?, ?> classifier, String filename) {
 		Path currentRelativePath = Paths.get("");
 		String currPathStr = currentRelativePath.toAbsolutePath().toString();
@@ -210,7 +241,8 @@ public class MaxentHelper {
 	// count[1] = wrong prediction
 	public static TreeMap<String,Integer> classify(String trainFilename, String testFilename, int fold) {
 		// createPropUnigram();
-		createPropNgram();
+		createPropUnigramSVM();
+		// createPropNgram();
 		
 		// confusion matrix
 		TreeMap<String, Integer> cm = new TreeMap<String,Integer>();
@@ -233,7 +265,6 @@ public class MaxentHelper {
 
 			Datum<String,String> d = cdc.makeDatumFromLine(line);
 			String predictedAnswer = cl.classOf(d);
-			
 			
 			// Evaluation
 			if (correctAnswer.equals(predictedAnswer)) {

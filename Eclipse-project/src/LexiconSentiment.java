@@ -275,11 +275,19 @@ public class LexiconSentiment {
 			
 			String trainFilename = "train"+fold+".txt";
 			String testFilename = "test"+fold+".txt";
-			MaxentHelper.createMaxentFile(trainingList, trainFilename);
-			MaxentHelper.createMaxentFile(testList, testFilename);
+			
+			// Use Maxent
+//			MaxentHelper.createMaxentFile(trainingList, trainFilename);
+//			MaxentHelper.createMaxentFile(testList, testFilename);
+//			TreeMap<String,Integer> cm = MaxentHelper.classify(trainFilename, testFilename, fold);
+			
+			// Use SVM
+			SVMHelper.createTrainingFileSVM(trainingList, Integer.toString(fold));
+			SVMHelper.createTestFileSVM(testList, Integer.toString(fold));
+			TreeMap<String,Integer> cm = SVMHelper.classify(fold);
 
 			// Classify and evaluate
-			TreeMap<String,Integer> cm = MaxentHelper.classify(trainFilename, testFilename, fold);
+			
 			for(Map.Entry<String,Integer> entry : cm.entrySet()) {
 				String key = entry.getKey();
 				Integer value = entry.getValue();

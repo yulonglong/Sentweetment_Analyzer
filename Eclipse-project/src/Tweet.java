@@ -91,6 +91,13 @@ public class Tweet {
 	
 	public String getTopic() { return topic; }
 	public String getSentiment() { return sentiment; }
+	public String getSentimentInteger() {
+		if (sentiment.equals("positive")) return "4";
+		if (sentiment.equals("neutral")) return "3";
+		if (sentiment.equals("negative")) return "2";
+		if (sentiment.equals("irrelevant")) return "1";
+		return "-1";
+	}
 	public String getText() { return text; }
 	public String getId() { return id; }
 	public int getPositiveLexiconCount() { return positiveLexiconCount; }
@@ -123,5 +130,13 @@ public class Tweet {
 		sb.append("\""+predictedSentiment+"\",");
 		sb.append("\""+text+"\"");
 		return sb.toString();
+	}
+	
+	public static String convertIntToStringSentiment(int n) {
+		if (n == 4) return "positive";
+		if (n == 3) return "neutral";
+		if (n == 2) return "negative";
+		if (n == 1) return "irrelevant";
+		return "invalid";
 	}
 }
