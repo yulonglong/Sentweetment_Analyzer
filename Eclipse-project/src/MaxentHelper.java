@@ -37,7 +37,7 @@ public class MaxentHelper {
 		try {
 			File prop = new File(currPathStr+"/"+s_maxentFolderName+"/"+s_propFileName);
 			PrintWriter pw = new PrintWriter(prop);
-			pw.println("useClassFeature=true");
+			pw.println("useClassFeature=false");
 			// pw.println("trainFromSVMLight = true");
 			// pw.println("testFromSVMLight = true");
 			
@@ -98,7 +98,7 @@ public class MaxentHelper {
 		try {
 			File prop = new File(currPathStr+"/"+s_maxentFolderName+"/"+s_propFileName);
 			PrintWriter pw = new PrintWriter(prop);
-			pw.println("useClassFeature=true");
+			pw.println("useClassFeature=false");
 			
 			// Topic
 			pw.println("1.useNGrams=false");
@@ -108,11 +108,8 @@ public class MaxentHelper {
 			// Tweet text
 			pw.println("2.splitWordsRegexp = \\\\s+");
 			pw.println("2.useSplitWords = true");
-			pw.println("2.useNGrams=true");
-			// pw.println("2.usePrefixSuffixNGrams=true");
-			pw.println("2.maxNGramLeng=4");
-			pw.println("2.minNGramLeng=1");
-			// pw.println("2.binnedLengths=10,20,30");
+			pw.println("2.useSplitWordNGrams = true");
+			pw.println("2.maxWordNGramLeng = 2");
 			
 			// Positive Lexicon Count
 			pw.println("3.realValued = true");
