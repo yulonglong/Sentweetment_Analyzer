@@ -63,13 +63,13 @@ public class Tweet {
 			text =  text.replaceAll("\\t+", " ");
 			
 			String urlRegex = "(?:http:\\/\\/t\\.co\\/[A-Za-z0-9]+)";
-			text =  text.replaceAll(urlRegex, " [url] ");
+			text =  text.replaceAll(urlRegex, " url ");
 			
 			StringBuilder sb = new StringBuilder();
 			PTBTokenizer<CoreLabel> ptbt = new PTBTokenizer<>(new StringReader(text), new CoreLabelTokenFactory(), "");
 			while (ptbt.hasNext()) {
 				CoreLabel coreLabel = ptbt.next();
-				sb.append(coreLabel + " ");
+				sb.append(coreLabel.toString().toLowerCase() + " ");
 			}
 			text = sb.toString();
 		}
