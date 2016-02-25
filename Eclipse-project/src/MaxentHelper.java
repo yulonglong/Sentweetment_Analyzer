@@ -53,20 +53,20 @@ public class MaxentHelper {
 			pw.println("3.realValued = true");
 			// Negative Lexicon Count
 			pw.println("4.realValued = true");
-			// Positive Lexicon Words
-			pw.println("5.useNGrams=false");
-			pw.println("5.splitWordsRegexp = \\\\s+");
-			pw.println("5.useSplitWords = true");
-			// Negative Lexicon Words
-			pw.println("6.useNGrams=false");
-			pw.println("6.splitWordsRegexp = \\\\s+");
-			pw.println("6.useSplitWords = true");
-			// Retweets Count
-			pw.println("7.realValued = true");
-			// Timezone
-			pw.println("8.useNGrams=false");
-			pw.println("8.splitWordsRegexp = \\\\s+");
-			pw.println("8.useSplitWords = true");
+//			// Positive Lexicon Words
+//			pw.println("5.useNGrams=false");
+//			pw.println("5.splitWordsRegexp = \\\\s+");
+//			pw.println("5.useSplitWords = true");
+//			// Negative Lexicon Words
+//			pw.println("6.useNGrams=false");
+//			pw.println("6.splitWordsRegexp = \\\\s+");
+//			pw.println("6.useSplitWords = true");
+//			// Retweets Count
+//			pw.println("7.realValued = true");
+//			// Timezone
+//			pw.println("8.useNGrams=false");
+//			pw.println("8.splitWordsRegexp = \\\\s+");
+//			pw.println("8.useSplitWords = true");
 //			// Friend's Count
 //			pw.println("9.realValued = true");
 //			// Follower's Count
@@ -120,23 +120,23 @@ public class MaxentHelper {
 			// Negative Lexicon Count
 			pw.println("4.realValued = true");
 			
-			// Positive Lexicon Words
-			pw.println("5.useNGrams=false");
-			pw.println("5.splitWordsRegexp = \\\\s+");
-			pw.println("5.useSplitWords = true");
+//			// Positive Lexicon Words
+//			pw.println("5.useNGrams=false");
+//			pw.println("5.splitWordsRegexp = \\\\s+");
+//			pw.println("5.useSplitWords = true");
+//			
+//			// Negative Lexicon Words
+//			pw.println("6.useNGrams=false");
+//			pw.println("6.splitWordsRegexp = \\\\s+");
+//			pw.println("6.useSplitWords = true");
 			
-			// Negative Lexicon Words
-			pw.println("6.useNGrams=false");
-			pw.println("6.splitWordsRegexp = \\\\s+");
-			pw.println("6.useSplitWords = true");
-			
-			// Retweets Count
-			pw.println("7.realValued = true");
-			
-			// Timezone
-			pw.println("8.useNGrams=false");
-			pw.println("8.splitWordsRegexp = \\\\s+");
-			pw.println("8.useSplitWords = true");
+//			// Retweets Count
+//			pw.println("7.realValued = true");
+//			
+//			// Timezone
+//			pw.println("8.useNGrams=false");
+//			pw.println("8.splitWordsRegexp = \\\\s+");
+//			pw.println("8.useSplitWords = true");
 			
 //			// Friend's Count
 //			pw.println("9.realValued = true");
