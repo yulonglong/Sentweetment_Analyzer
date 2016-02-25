@@ -15,6 +15,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import edu.stanford.nlp.classify.Classifier;
 import edu.stanford.nlp.classify.LinearClassifier;
@@ -219,7 +221,7 @@ public class MaxentHelper {
 		
 		String classString;
 		if (classifier instanceof LinearClassifier<?,?>) {
-			classString = ((LinearClassifier<?,?>)classifier).toString("HighMagnitude", n);
+			classString = ((LinearClassifier<?,?>)classifier).toString("HighWeight", n);
 		} else {
 			classString = classifier.toString();
 		}
@@ -232,6 +234,50 @@ public class MaxentHelper {
 			e.printStackTrace();
 		}
 		fw.close();
+	}
+	
+	private static void printPossibleNewLexicon(String classifierTopNWeightFilename, String positiveFilename, String negativeFilename) {
+		Path currentRelativePath = Paths.get("");
+		String currPathStr = currentRelativePath.toAbsolutePath().toString();
+		File classifierFile = new File (currPathStr+"/"+s_maxentFolderName+"/"+classifierTopNWeightFilename);
+		
+		File posFile = new File (currPathStr+"/"+s_maxentFolderName+"/"+positiveFilename+".txt");
+		File negFile = new File (currPathStr+"/"+s_maxentFolderName+"/"+negativeFilename+".txt");
+		
+		
+		try {
+			PrintWriter posPw = new PrintWriter(posFile);
+			PrintWriter negPw = new PrintWriter(negFile);
+			BufferedReader br = new BufferedReader (new FileReader(classifierFile)); 
+			String line = br.readLine(); // discard first line
+			
+			String regexPattern = "(?:\\(2-SW-(.+),((?:positive)|(?:negative))\\)\\s+\\d\\.\\d+)";
+			Pattern pattern = Pattern.compile(regexPattern);
+			while ((line = br.readLine()) != null) {
+				Matcher m = pattern.matcher(line);
+				if (m.find()) {
+					String word = m.group(1);
+					String sentiment = m.group(2);
+					if (sentiment.equals("positive")) {
+						if (!LexiconSentiment.s_positiveLexicon.contains(word.toLowerCase())) {
+							posPw.println(word);
+							posPw.flush();
+						}
+					}
+					else if (sentiment.equals("negative")) {
+						if (!LexiconSentiment.s_negativeLexicon.contains(word.toLowerCase())) {
+							negPw.println(word);
+							negPw.flush();
+						}
+					}
+				}
+			}
+			
+			posPw.close();
+			negPw.close();
+			br.close();
+		}
+		catch (Exception e) { e.printStackTrace(); }
 	}
 	
 	private static void serializeClassifier(Classifier<?, ?> classifier, String filename) {
@@ -285,7 +331,9 @@ public class MaxentHelper {
 		Classifier<String,String> cl = cdc.makeClassifier(cdc.readTrainingExamples(currPathStr+"/"+s_maxentFolderName+"/"+trainFilename));
 		
 		printClassifierAllWeights(cl, "classifierAll_"+fold+".txt");
-		printClassifierTopNWeights(cl, "classifierTop200_"+fold+".txt",1000);
+		printClassifierTopNWeights(cl, "classifierTop_"+fold+".txt",1000);
+		printPossibleNewLexicon("classifierTop_"+fold+".txt","possiblePositive"+fold, "possibleNegative"+fold);
+		
 		serializeClassifier(cl, "classifierModel"+fold);
 		
 		// Classifier<String,String> deserializedCl = (Classifier<String,String>) deserializeClassifier("classifierModel"+fold);
