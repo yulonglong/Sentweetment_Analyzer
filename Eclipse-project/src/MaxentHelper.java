@@ -215,14 +215,14 @@ public class MaxentHelper {
 		fw.close();
 	}
 	
-	private static void printClassifierTop200Weights(Classifier<?, ?> classifier, String filename) {
+	private static void printClassifierTopNWeights(Classifier<?, ?> classifier, String filename, int n) {
 		Path currentRelativePath = Paths.get("");
 		String currPathStr = currentRelativePath.toAbsolutePath().toString();
 		File classifierFile = new File (currPathStr+"/"+s_maxentFolderName+"/"+filename);
 		
 		String classString;
 		if (classifier instanceof LinearClassifier<?,?>) {
-			classString = ((LinearClassifier<?,?>)classifier).toString("HighMagnitude", 200);
+			classString = ((LinearClassifier<?,?>)classifier).toString("HighMagnitude", n);
 		} else {
 			classString = classifier.toString();
 		}
@@ -288,7 +288,7 @@ public class MaxentHelper {
 		Classifier<String,String> cl = cdc.makeClassifier(cdc.readTrainingExamples(currPathStr+"/"+s_maxentFolderName+"/"+trainFilename));
 		
 		printClassifierAllWeights(cl, "classifierAll_"+fold+".txt");
-		printClassifierTop200Weights(cl, "classifierTop200_"+fold+".txt");
+		printClassifierTopNWeights(cl, "classifierTop200_"+fold+".txt",1000);
 		serializeClassifier(cl, "classifierModel"+fold);
 		
 		// Classifier<String,String> deserializedCl = (Classifier<String,String>) deserializeClassifier("classifierModel"+fold);
