@@ -61,35 +61,19 @@ public class MaxentHelper {
 			pw.println("6.useNGrams=false");
 			pw.println("6.splitWordsRegexp = \\\\s+");
 			pw.println("6.useSplitWords = true");
-			pw.println("goldAnswerColumn=0");
-			pw.println("intern=true");
-			pw.println("sigma=3");
-			pw.println("useQN=true");
-			pw.println("QNsize=15");
-			pw.println("tolerance=1e-4");
-			pw.close();
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	
-	public static void createPropUnigramSVM() {
-		Path currentRelativePath = Paths.get("");
-		String currPathStr = currentRelativePath.toAbsolutePath().toString();
-		
-		// Make folder if doesnt exist
-		File folder = new File(currPathStr+"/"+s_maxentFolderName+"/");
-		folder.mkdirs();
-		
-		try {
-			File prop = new File(currPathStr+"/"+s_maxentFolderName+"/"+s_propFileName);
-			PrintWriter pw = new PrintWriter(prop);
-			pw.println("useClassFeature=true");
-			pw.println("1.trainFromSVMLight = true");
-			pw.println("1.testFromSVMLight = true");
+			// Retweets Count
+			pw.println("7.realValued = true");
+			// Timezone
+			pw.println("8.useNGrams=false");
+			pw.println("8.splitWordsRegexp = \\\\s+");
+			pw.println("8.useSplitWords = true");
+			// Friend's Count
+			pw.println("9.realValued = true");
+			// Follower's Count
+			pw.println("10.realValued = true");
+			// Favourite's Count
+			pw.println("11.realValued = true");
 			
-
 			pw.println("goldAnswerColumn=0");
 			pw.println("intern=true");
 			pw.println("sigma=3");
@@ -146,6 +130,23 @@ public class MaxentHelper {
 			pw.println("6.splitWordsRegexp = \\\\s+");
 			pw.println("6.useSplitWords = true");
 			
+			// Retweets Count
+			pw.println("7.realValued = true");
+			
+			// Timezone
+			pw.println("8.useNGrams=false");
+			pw.println("8.splitWordsRegexp = \\\\s+");
+			pw.println("8.useSplitWords = true");
+			
+			// Friend's Count
+			pw.println("9.realValued = true");
+			
+			// Follower's Count
+			pw.println("10.realValued = true");
+			
+			// Favourite's Count
+			pw.println("11.realValued = true");
+			
 			pw.println("goldAnswerColumn=0");
 			pw.println("intern=true");
 			pw.println("sigma=3");
@@ -174,7 +175,14 @@ public class MaxentHelper {
 				pw.print(currTweet.getPositiveLexiconCount()+"\t");
 				pw.print(currTweet.getNegativeLexiconCount()+"\t");
 				pw.print(currTweet.getPositiveLexiconTokens()+"\t");
-				pw.print(currTweet.getNegativeLexiconTokens());
+				pw.print(currTweet.getNegativeLexiconTokens()+"\t");
+				
+				pw.print(currTweet.getRetweets()+"\t");
+				pw.print(currTweet.getTimezone()+"\t");
+				pw.print(currTweet.getFriendsCount()+"\t");
+				pw.print(currTweet.getFollowersCount()+"\t");
+				pw.print(currTweet.getFavouritesCount()+"\t");
+				
 				pw.println();
 				pw.flush();
 			}
@@ -239,10 +247,13 @@ public class MaxentHelper {
 	
 	// count[0] = correct prediction
 	// count[1] = wrong prediction
-	public static TreeMap<String,Integer> classify(String trainFilename, String testFilename, int fold) {
-		// createPropUnigram();
-		createPropUnigramSVM();
-		// createPropNgram();
+	public static TreeMap<String,Integer> classify(String trainFilename, String testFilename, int fold, String command) {
+		if (command.equalsIgnoreCase("unigram")) createPropUnigram();
+		else if (command.equalsIgnoreCase("ngram")) createPropNgram();
+		else {
+			System.err.println("Invalid command in Maxent classify");
+			return null;
+		}
 		
 		// confusion matrix
 		TreeMap<String, Integer> cm = new TreeMap<String,Integer>();

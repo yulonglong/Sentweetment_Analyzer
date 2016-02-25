@@ -277,14 +277,14 @@ public class LexiconSentiment {
 			String testFilename = "test"+fold+".txt";
 			
 			// Use Maxent
-//			MaxentHelper.createMaxentFile(trainingList, trainFilename);
-//			MaxentHelper.createMaxentFile(testList, testFilename);
-//			TreeMap<String,Integer> cm = MaxentHelper.classify(trainFilename, testFilename, fold);
+			MaxentHelper.createMaxentFile(trainingList, trainFilename);
+			MaxentHelper.createMaxentFile(testList, testFilename);
+			TreeMap<String,Integer> cm = MaxentHelper.classify(trainFilename, testFilename, fold, "unigram");
 			
 			// Use SVM
-			SVMHelper.createTrainingFileSVM(trainingList, Integer.toString(fold));
-			SVMHelper.createTestFileSVM(testList, Integer.toString(fold));
-			TreeMap<String,Integer> cm = SVMHelper.classify(fold);
+//			SVMHelper.createTrainingFileSVM(trainingList, Integer.toString(fold));
+//			SVMHelper.createTestFileSVM(testList, Integer.toString(fold));
+//			TreeMap<String,Integer> cm = SVMHelper.classify(fold);
 
 			// Classify and evaluate
 			

@@ -136,6 +136,12 @@ public class Tweet {
 	}
 	public String getText() { return text; }
 	public String getId() { return id; }
+	public int getRetweets() {  return retweets; }
+	public String getTimezone() {  return timezone; }
+	public int getFriendsCount() { return friendsCount; }
+	public int getFollowersCount() { return followersCount; }
+	public int getFavouritesCount() { return favouritesCount; }
+	
 	public int getPositiveLexiconCount() { return positiveLexiconCount; }
 	public int getNegativeLexiconCount() { return negativeLexiconCount; }
 	public String getPositiveLexiconTokens() { 
