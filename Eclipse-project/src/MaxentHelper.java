@@ -67,12 +67,12 @@ public class MaxentHelper {
 			pw.println("8.useNGrams=false");
 			pw.println("8.splitWordsRegexp = \\\\s+");
 			pw.println("8.useSplitWords = true");
-			// Friend's Count
-			pw.println("9.realValued = true");
-			// Follower's Count
-			pw.println("10.realValued = true");
-			// Favourite's Count
-			pw.println("11.realValued = true");
+//			// Friend's Count
+//			pw.println("9.realValued = true");
+//			// Follower's Count
+//			pw.println("10.realValued = true");
+//			// Favourite's Count
+//			pw.println("11.realValued = true");
 			
 			pw.println("goldAnswerColumn=0");
 			pw.println("intern=true");
@@ -138,15 +138,15 @@ public class MaxentHelper {
 			pw.println("8.splitWordsRegexp = \\\\s+");
 			pw.println("8.useSplitWords = true");
 			
-			// Friend's Count
-			pw.println("9.realValued = true");
-			
-			// Follower's Count
-			pw.println("10.realValued = true");
-			
-			// Favourite's Count
-			pw.println("11.realValued = true");
-			
+//			// Friend's Count
+//			pw.println("9.realValued = true");
+//			
+//			// Follower's Count
+//			pw.println("10.realValued = true");
+//			
+//			// Favourite's Count
+//			pw.println("11.realValued = true");
+	
 			pw.println("goldAnswerColumn=0");
 			pw.println("intern=true");
 			pw.println("sigma=3");
@@ -179,9 +179,9 @@ public class MaxentHelper {
 				
 				pw.print(currTweet.getRetweets()+"\t");
 				pw.print(currTweet.getTimezone()+"\t");
-				pw.print(currTweet.getFriendsCount()+"\t");
-				pw.print(currTweet.getFollowersCount()+"\t");
-				pw.print(currTweet.getFavouritesCount()+"\t");
+//				pw.print(currTweet.getFriendsCount()+"\t");
+//				pw.print(currTweet.getFollowersCount()+"\t");
+//				pw.print(currTweet.getFavouritesCount()+"\t");
 				
 				pw.println();
 				pw.flush();
