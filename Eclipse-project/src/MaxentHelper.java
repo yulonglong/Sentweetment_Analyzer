@@ -222,7 +222,7 @@ public class MaxentHelper {
 		
 		String classString;
 		if (classifier instanceof LinearClassifier<?,?>) {
-			classString = ((LinearClassifier<?,?>)classifier).toString("HighWeight", 200);
+			classString = ((LinearClassifier<?,?>)classifier).toString("HighMagnitude", 200);
 		} else {
 			classString = classifier.toString();
 		}

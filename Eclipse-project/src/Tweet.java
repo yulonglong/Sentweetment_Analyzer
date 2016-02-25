@@ -1,9 +1,15 @@
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import javax.json.JsonArray;
 import javax.json.JsonObject;
+
+import edu.stanford.nlp.ling.CoreLabel;
+import edu.stanford.nlp.ling.HasWord;
+import edu.stanford.nlp.process.CoreLabelTokenFactory;
+import edu.stanford.nlp.process.PTBTokenizer;
 
 public class Tweet {
 	private String topic;
@@ -58,6 +64,14 @@ public class Tweet {
 			
 			String urlRegex = "(?:http:\\/\\/t\\.co\\/[A-Za-z0-9]+)";
 			text =  text.replaceAll(urlRegex, " [url] ");
+			
+			StringBuilder sb = new StringBuilder();
+			PTBTokenizer<CoreLabel> ptbt = new PTBTokenizer<>(new StringReader(text), new CoreLabelTokenFactory(), "");
+			while (ptbt.hasNext()) {
+				CoreLabel coreLabel = ptbt.next();
+				sb.append(coreLabel + " ");
+			}
+			text = sb.toString();
 		}
 		else{
 			System.err.println("no text key in: " + tweetFname);
