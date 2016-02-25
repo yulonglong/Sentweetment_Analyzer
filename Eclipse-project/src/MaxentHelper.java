@@ -193,7 +193,7 @@ public class MaxentHelper {
 		}
 	}
 
-	private static void printClassifier(Classifier<?, ?> classifier, String filename) {
+	private static void printClassifierAllWeights(Classifier<?, ?> classifier, String filename) {
 		Path currentRelativePath = Paths.get("");
 		String currPathStr = currentRelativePath.toAbsolutePath().toString();
 		File classifierFile = new File (currPathStr+"/"+s_maxentFolderName+"/"+filename);
@@ -201,6 +201,28 @@ public class MaxentHelper {
 		String classString;
 		if (classifier instanceof LinearClassifier<?,?>) {
 			classString = ((LinearClassifier<?,?>)classifier).toString("AllWeights", 0);
+		} else {
+			classString = classifier.toString();
+		}
+		PrintWriter fw = null;
+		try {
+			fw = new PrintWriter(classifierFile);
+			fw.write(classString);
+			fw.println();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		fw.close();
+	}
+	
+	private static void printClassifierTop200Weights(Classifier<?, ?> classifier, String filename) {
+		Path currentRelativePath = Paths.get("");
+		String currPathStr = currentRelativePath.toAbsolutePath().toString();
+		File classifierFile = new File (currPathStr+"/"+s_maxentFolderName+"/"+filename);
+		
+		String classString;
+		if (classifier instanceof LinearClassifier<?,?>) {
+			classString = ((LinearClassifier<?,?>)classifier).toString("HighWeight", 200);
 		} else {
 			classString = classifier.toString();
 		}
@@ -265,7 +287,8 @@ public class MaxentHelper {
 		ColumnDataClassifier cdc = new ColumnDataClassifier(currPathStr+"/"+s_maxentFolderName+"/"+s_propFileName);
 		Classifier<String,String> cl = cdc.makeClassifier(cdc.readTrainingExamples(currPathStr+"/"+s_maxentFolderName+"/"+trainFilename));
 		
-		printClassifier(cl, "classifier"+fold+".txt");
+		printClassifierAllWeights(cl, "classifierAll_"+fold+".txt");
+		printClassifierTop200Weights(cl, "classifierTop200_"+fold+".txt");
 		serializeClassifier(cl, "classifierModel"+fold);
 		
 		// Classifier<String,String> deserializedCl = (Classifier<String,String>) deserializeClassifier("classifierModel"+fold);
