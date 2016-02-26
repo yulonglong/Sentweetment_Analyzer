@@ -76,6 +76,9 @@ public class MaxentHelper {
 //			// Favourite's Count
 //			pw.println("11.realValued = true");
 			
+			// User's Id
+			pw.println("12.realValued = true");
+			
 			pw.println("goldAnswerColumn=0");
 			pw.println("intern=true");
 			pw.println("sigma=3");
@@ -145,6 +148,9 @@ public class MaxentHelper {
 //			
 //			// Favourite's Count
 //			pw.println("11.realValued = true");
+			
+			// User's Id
+			pw.println("12.realValued = true");
 	
 			pw.println("goldAnswerColumn=0");
 			pw.println("intern=true");
@@ -184,6 +190,7 @@ public class MaxentHelper {
 //				pw.print(currTweet.getFriendsCount()+"\t");
 //				pw.print(currTweet.getFollowersCount()+"\t");
 //				pw.print(currTweet.getFavouritesCount()+"\t");
+				pw.print(currTweet.getUserId()+"\t");
 				
 				pw.println();
 				pw.flush();
