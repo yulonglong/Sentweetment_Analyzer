@@ -24,6 +24,7 @@ public class Tweet {
 	private int friendsCount; // The number of users this account is following (AKA their ¡°followings¡±)
 	private int followersCount; // The number of followers this account currently has. 
 	private int favouritesCount; // The number of tweets this user has favorited in the account¡¯s lifetime.
+	private int userId; // id of the person posting this tweet
 	
 	private List<String> positiveLexiconList;
 	private List<String> negativeLexiconList;
@@ -102,6 +103,9 @@ public class Tweet {
 		
 		// get favouritescount
 		favouritesCount = tweetJson.getJsonObject("user").getInt("favourites_count");
+		
+		// get userId
+		userId = tweetJson.getJsonObject("user").getInt("id");
 	}
 	
 	private void processLexicon() {
@@ -155,6 +159,7 @@ public class Tweet {
 	public int getFriendsCount() { return friendsCount; }
 	public int getFollowersCount() { return followersCount; }
 	public int getFavouritesCount() { return favouritesCount; }
+	public int getUserId() { return userId; }
 	
 	public int getPositiveLexiconCount() { return positiveLexiconCount; }
 	public int getNegativeLexiconCount() { return negativeLexiconCount; }
