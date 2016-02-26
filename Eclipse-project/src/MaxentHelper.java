@@ -187,9 +187,9 @@ public class MaxentHelper {
 				
 				pw.print(currTweet.getRetweets()+"\t");
 				pw.print(currTweet.getTimezone()+"\t");
-//				pw.print(currTweet.getFriendsCount()+"\t");
-//				pw.print(currTweet.getFollowersCount()+"\t");
-//				pw.print(currTweet.getFavouritesCount()+"\t");
+				pw.print(currTweet.getFriendsCount()+"\t");
+				pw.print(currTweet.getFollowersCount()+"\t");
+				pw.print(currTweet.getFavouritesCount()+"\t");
 				pw.print(currTweet.getUserId()+"\t");
 				
 				pw.println();
