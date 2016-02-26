@@ -160,8 +160,11 @@ public class MaxentHelper {
 	}
 	
 	public static void createMaxentFile(ArrayList<Tweet> tweetList, String filename) {
-		Path currentRelativePath = Paths.get("");
-		String currPathStr = currentRelativePath.toAbsolutePath().toString();
+		// Make folder if doesnt exist
+		String currPathStr = Paths.get("").toAbsolutePath().toString();
+		File folder = new File(currPathStr+"/"+s_maxentFolderName+"/");
+		folder.mkdirs();
+		
 		File file = new File(currPathStr+"/"+s_maxentFolderName+"/"+filename);
 		
 		try {
