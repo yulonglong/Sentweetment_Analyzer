@@ -79,7 +79,6 @@ public class MaxentHelper {
 			// User's Id
 			pw.println("12.splitWordsRegexp = \\\\s+");
 			pw.println("12.useSplitWords = true");
-			pw.println("12.useSplitWordNGrams = true");
 			
 			pw.println("goldAnswerColumn=0");
 			pw.println("intern=true");
@@ -154,7 +153,6 @@ public class MaxentHelper {
 			// User's Id
 			pw.println("12.splitWordsRegexp = \\\\s+");
 			pw.println("12.useSplitWords = true");
-			pw.println("12.useSplitWordNGrams = true");
 	
 			pw.println("goldAnswerColumn=0");
 			pw.println("intern=true");
