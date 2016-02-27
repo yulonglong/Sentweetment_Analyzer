@@ -13,6 +13,9 @@ public class LexiconSentiment {
 	public static Set<String> s_positiveLexicon = null;
 	private ArrayList<Tweet> tweetList = null;
 	private ArrayList<ArrayList<Tweet> > tweetListPartition = null;
+	
+	public static boolean s_runDevelopment = false;
+	public static boolean s_runTesting = true;
 
 	/**
 	 * @param args
@@ -55,26 +58,41 @@ public class LexiconSentiment {
 			System.out.println("positive lexicon size: " + s_positiveLexicon.size());
 		}
 		
-		//read in training elements 
-		String trainFname = GlobalHelper.pathToDataset + "training.csv";
-		if(!readTweetHeaderFile(trainFname)){
-			System.err.println("fail to read: " + trainFname);
-			System.err.println("fail to read in train elements from: " + trainFname);
-			return false;
-		}
-		else{
-			System.out.println("count of train tweets: " + tweetList.size());
+		if (s_runDevelopment) {
+			//read in development elements 
+			String trainFname = GlobalHelper.pathToDataset + "development.csv";
+			if(!readTweetHeaderFile(trainFname)){
+				System.err.println("fail to read: " + trainFname);
+				System.err.println("fail to read in train elements from: " + trainFname);
+				return false;
+			}
+			else{
+				System.out.println("count of train tweets: " + tweetList.size());
+			}
 		}
 		
-		//read in test elements 
-		String testFname = GlobalHelper.pathToDataset + "testing.csv";
-		if(!readTweetHeaderFile(testFname)){
-			System.err.println("fail to read: " + testFname);
-			System.err.println("fail to read in test elements from: " + testFname);
-			return false;
-		}
-		else{
-			System.out.println("count of combined tweets: " + tweetList.size());
+		if (s_runTesting) {
+			//read in training elements 
+			String trainFname = GlobalHelper.pathToDataset + "training.csv";
+			if(!readTweetHeaderFile(trainFname)){
+				System.err.println("fail to read: " + trainFname);
+				System.err.println("fail to read in train elements from: " + trainFname);
+				return false;
+			}
+			else{
+				System.out.println("count of train tweets: " + tweetList.size());
+			}
+			
+			//read in test elements 
+			String testFname = GlobalHelper.pathToDataset + "testing.csv";
+			if(!readTweetHeaderFile(testFname)){
+				System.err.println("fail to read: " + testFname);
+				System.err.println("fail to read in test elements from: " + testFname);
+				return false;
+			}
+			else{
+				System.out.println("count of combined tweets: " + tweetList.size());
+			}
 		}
 		
 		//ten fold partition
