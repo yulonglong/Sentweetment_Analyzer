@@ -178,6 +178,11 @@ public class Tweet {
 		return sb.toString();
 	}
 	
+	public String isTopicRelevant() {
+		if (text.contains(topic.toLowerCase())) return "1";
+		return "0";
+	}
+	
 	public boolean isPredictionCorrect() {
 		if (sentiment.equalsIgnoreCase(predictedSentiment)) return true;
 		return false;

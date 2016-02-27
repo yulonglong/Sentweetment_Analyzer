@@ -40,13 +40,9 @@ public class MaxentHelper {
 			File prop = new File(currPathStr+"/"+s_maxentFolderName+"/"+s_propFileName);
 			PrintWriter pw = new PrintWriter(prop);
 			pw.println("useClassFeature=false");
-			// pw.println("trainFromSVMLight = true");
-			// pw.println("testFromSVMLight = true");
 			
 			// Topic
-			pw.println("1.useNGrams=false");
-			pw.println("1.splitWordsRegexp = \\\\s+");
-			pw.println("1.useSplitWords = true");
+			pw.println("1.realValued=true");
 			// Tweet text
 			pw.println("2.useNGrams=false");
 			pw.println("2.splitWordsRegexp = \\\\s+");
@@ -107,9 +103,7 @@ public class MaxentHelper {
 			pw.println("useClassFeature=false");
 			
 			// Topic
-			pw.println("1.useNGrams=false");
-			pw.println("1.splitWordsRegexp = \\\\s+");
-			pw.println("1.useSplitWords = true");
+			pw.println("1.realValued=true");
 			
 			// Tweet text
 			pw.println("2.splitWordsRegexp = \\\\s+");
@@ -180,7 +174,7 @@ public class MaxentHelper {
 			for (int i=0;i<tweetList.size();i++) {
 				Tweet currTweet = tweetList.get(i);
 				pw.print(currTweet.getSentiment()+"\t");
-				pw.print(currTweet.getTopic()+"\t");
+				pw.print(currTweet.isTopicRelevant()+"\t");
 				pw.print(currTweet.getText()+"\t");
 				pw.print(currTweet.getPositiveLexiconCount()+"\t");
 				pw.print(currTweet.getNegativeLexiconCount()+"\t");
