@@ -14,8 +14,11 @@ public class LexiconSentiment {
 	private ArrayList<Tweet> tweetList = null;
 	private ArrayList<ArrayList<Tweet> > tweetListPartition = null;
 	
+	private ArrayList<Tweet> onlineTweetList = null;
+	
 	public static boolean s_runDevelopment = false;
-	public static boolean s_runTesting = true;
+	public static boolean s_runTraining = true;
+	public static boolean s_runOnlineTesting = false;
 
 	/**
 	 * @param args
@@ -28,7 +31,8 @@ public class LexiconSentiment {
 		if(!sentimenter.initialize()){
 			System.err.println("fail to initialize the sentimenter");
 		}else{
-			sentimenter.tenFoldCrossValidation();
+			if (!s_runOnlineTesting) sentimenter.tenFoldCrossValidation();
+			else sentimenter.doOnlineTesting();
 		}
 	}
 
@@ -39,6 +43,7 @@ public class LexiconSentiment {
 		s_positiveLexicon = new TreeSet<String>();
 		
 		tweetList = new ArrayList<Tweet>();
+		onlineTweetList = new ArrayList<Tweet>();
 	}
 	public boolean initialize() throws IOException{
 		// Read in negative Lexicon 
@@ -60,10 +65,10 @@ public class LexiconSentiment {
 		
 		if (s_runDevelopment) {
 			//read in development elements 
-			String trainFname = GlobalHelper.pathToDataset + "development.csv";
-			if(!readTweetHeaderFile(trainFname)){
-				System.err.println("fail to read: " + trainFname);
-				System.err.println("fail to read in train elements from: " + trainFname);
+			String developmentFname = GlobalHelper.pathToDataset + "development.csv";
+			if(!readTweetHeaderFile(tweetList, developmentFname)){
+				System.err.println("fail to read: " + developmentFname);
+				System.err.println("fail to read in train elements from: " + developmentFname);
 				return false;
 			}
 			else{
@@ -71,32 +76,50 @@ public class LexiconSentiment {
 			}
 		}
 		
-		if (s_runTesting) {
+		if (s_runTraining) {
 			//read in training elements 
 			String trainFname = GlobalHelper.pathToDataset + "training.csv";
-			if(!readTweetHeaderFile(trainFname)){
+			if(!readTweetHeaderFile(tweetList, trainFname)){
 				System.err.println("fail to read: " + trainFname);
 				System.err.println("fail to read in train elements from: " + trainFname);
 				return false;
 			}
 			else{
-				System.out.println("count of train tweets: " + tweetList.size());
+				System.out.println("count of training.csv tweets: " + tweetList.size());
 			}
 			
 			//read in test elements 
 			String testFname = GlobalHelper.pathToDataset + "testing.csv";
-			if(!readTweetHeaderFile(testFname)){
+			if(!readTweetHeaderFile(tweetList, testFname)){
 				System.err.println("fail to read: " + testFname);
 				System.err.println("fail to read in test elements from: " + testFname);
 				return false;
 			}
 			else{
-				System.out.println("count of combined tweets: " + tweetList.size());
+				System.out.println("count of testing.csv tweets: " + tweetList.size());
 			}
 		}
 		
-		//ten fold partition
-		tenFoldPartition();
+
+		System.out.println("count of combined train tweets: " + tweetList.size());
+		
+		if (s_runOnlineTesting) {
+			//read in test elements 
+			String onlineTestFname = GlobalHelper.pathToDataset + "onlinetest.csv";
+			if(!readTweetHeaderFile(onlineTweetList, onlineTestFname)){
+				System.err.println("fail to read: " + onlineTestFname);
+				System.err.println("fail to read in test elements from: " + onlineTestFname);
+				return false;
+			}
+			else{
+				System.out.println("count of onlinetest.csv tweets: " + onlineTweetList.size());
+			}
+		}
+		
+		if (!s_runOnlineTesting) {
+			//ten fold partition
+			tenFoldPartition();
+		}
 		
 		return true;
 	}
@@ -111,9 +134,9 @@ public class LexiconSentiment {
 		}
 		return true;
 	}
-	private boolean readTweetHeaderFile(String fname) throws IOException{
+	private boolean readTweetHeaderFile(ArrayList<Tweet> currTweetList, String fname) throws IOException{
 		//read in csv test file
-		if(!CsvFileReader.readCsvElementsTweet(tweetList, fname, 3, true)){
+		if(!CsvFileReader.readCsvElementsTweet(currTweetList, fname, 3, true)){
 			System.err.println("fail to read in csv file: " + fname);
 			return false;
 		}
@@ -297,7 +320,7 @@ public class LexiconSentiment {
 			// Use Maxent
 			MaxentHelper.createMaxentFile(trainingList, trainFilename);
 			MaxentHelper.createMaxentFile(testList, testFilename);
-			TreeMap<String,Integer> cm = MaxentHelper.classify(trainFilename, testFilename, fold, "unigram");
+			TreeMap<String,Integer> cm = MaxentHelper.classify(trainFilename, testFilename, Integer.toString(fold), "unigram", false);
 			
 			// Use SVM
 //			SVMHelper.createTrainingFileSVM(trainingList, Integer.toString(fold));
@@ -320,5 +343,16 @@ public class LexiconSentiment {
 
 		System.out.println("==========================================");
 		printGlobalCMPerformance();
+	}
+	
+	public void doOnlineTesting() throws FileNotFoundException{
+			
+		String trainFilename = "train.txt";
+		String testFilename = "test.txt";
+		
+		// Use Maxent
+		MaxentHelper.createMaxentFile(tweetList, trainFilename);
+		MaxentHelper.createMaxentFile(onlineTweetList, testFilename);
+		TreeMap<String,Integer> cm = MaxentHelper.classify(trainFilename, testFilename, "", "ngram",true);
 	}
 }

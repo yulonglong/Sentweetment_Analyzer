@@ -42,39 +42,39 @@ public class MaxentHelper {
 			pw.println("useClassFeature=false");
 			
 			// Topic
-			pw.println("1.realValued=true");
+			pw.println("2.realValued=true");
 			// Tweet text
-			pw.println("2.useNGrams=false");
-			pw.println("2.splitWordsRegexp = \\\\s+");
-			pw.println("2.useSplitWords = true");
+			pw.println("3.useNGrams=false");
+			pw.println("3.splitWordsRegexp = \\\\s+");
+			pw.println("3.useSplitWords = true");
 			// Positive Lexicon Count
-			pw.println("3.realValued = true");
-			// Negative Lexicon Count
 			pw.println("4.realValued = true");
+			// Negative Lexicon Count
+			pw.println("5.realValued = true");
 //			// Positive Lexicon Words
-//			pw.println("5.useNGrams=false");
-//			pw.println("5.splitWordsRegexp = \\\\s+");
-//			pw.println("5.useSplitWords = true");
-//			// Negative Lexicon Words
 //			pw.println("6.useNGrams=false");
 //			pw.println("6.splitWordsRegexp = \\\\s+");
 //			pw.println("6.useSplitWords = true");
+//			// Negative Lexicon Words
+//			pw.println("7.useNGrams=false");
+//			pw.println("7.splitWordsRegexp = \\\\s+");
+//			pw.println("7.useSplitWords = true");
 //			// Retweets Count
-//			pw.println("7.realValued = true");
+//			pw.println("8.realValued = true");
 //			// Timezone
-//			pw.println("8.useNGrams=false");
-//			pw.println("8.splitWordsRegexp = \\\\s+");
-//			pw.println("8.useSplitWords = true");
+//			pw.println("9.useNGrams=false");
+//			pw.println("9.splitWordsRegexp = \\\\s+");
+//			pw.println("9.useSplitWords = true");
 //			// Friend's Count
-//			pw.println("9.realValued = true");
-//			// Follower's Count
 //			pw.println("10.realValued = true");
-//			// Favourite's Count
+//			// Follower's Count
 //			pw.println("11.realValued = true");
+//			// Favourite's Count
+//			pw.println("12.realValued = true");
 			
 			// User's Id
-			pw.println("12.splitWordsRegexp = \\\\s+");
-			pw.println("12.useSplitWords = true");
+			pw.println("13.splitWordsRegexp = \\\\s+");
+			pw.println("13.useSplitWords = true");
 			
 			pw.println("goldAnswerColumn=0");
 			pw.println("intern=true");
@@ -103,50 +103,41 @@ public class MaxentHelper {
 			pw.println("useClassFeature=false");
 			
 			// Topic
-			pw.println("1.realValued=true");
+			pw.println("2.realValued=true");
 			
 			// Tweet text
-			pw.println("2.splitWordsRegexp = \\\\s+");
-			pw.println("2.useSplitWords = true");
-			pw.println("2.useSplitWordNGrams = true");
-			pw.println("2.maxWordNGramLeng = 2");
-			
+			pw.println("3.splitWordsRegexp = \\\\s+");
+			pw.println("3.useSplitWords = true");
+			pw.println("3.useSplitWordNGrams = true");
+			pw.println("3.maxWordNGramLeng = 2");
 			// Positive Lexicon Count
-			pw.println("3.realValued = true");
-			
-			// Negative Lexicon Count
 			pw.println("4.realValued = true");
-			
+			// Negative Lexicon Count
+			pw.println("5.realValued = true");
 //			// Positive Lexicon Words
-//			pw.println("5.useNGrams=false");
-//			pw.println("5.splitWordsRegexp = \\\\s+");
-//			pw.println("5.useSplitWords = true");
-//			
-//			// Negative Lexicon Words
 //			pw.println("6.useNGrams=false");
 //			pw.println("6.splitWordsRegexp = \\\\s+");
 //			pw.println("6.useSplitWords = true");
-			
+//			// Negative Lexicon Words
+//			pw.println("7.useNGrams=false");
+//			pw.println("7.splitWordsRegexp = \\\\s+");
+//			pw.println("7.useSplitWords = true");
 //			// Retweets Count
-//			pw.println("7.realValued = true");
-//			
+//			pw.println("8.realValued = true");
 //			// Timezone
-//			pw.println("8.useNGrams=false");
-//			pw.println("8.splitWordsRegexp = \\\\s+");
-//			pw.println("8.useSplitWords = true");
-			
+//			pw.println("9.useNGrams=false");
+//			pw.println("9.splitWordsRegexp = \\\\s+");
+//			pw.println("9.useSplitWords = true");
 //			// Friend's Count
-//			pw.println("9.realValued = true");
-//			
-//			// Follower's Count
 //			pw.println("10.realValued = true");
-//			
-//			// Favourite's Count
+//			// Follower's Count
 //			pw.println("11.realValued = true");
+//			// Favourite's Count
+//			pw.println("12.realValued = true");
 			
 			// User's Id
-			pw.println("12.splitWordsRegexp = \\\\s+");
-			pw.println("12.useSplitWords = true");
+			pw.println("13.splitWordsRegexp = \\\\s+");
+			pw.println("13.useSplitWords = true");
 	
 			pw.println("goldAnswerColumn=0");
 			pw.println("intern=true");
@@ -174,6 +165,7 @@ public class MaxentHelper {
 			for (int i=0;i<tweetList.size();i++) {
 				Tweet currTweet = tweetList.get(i);
 				pw.print(currTweet.getSentiment()+"\t");
+				pw.print(currTweet.getId()+"\t");
 				pw.print(currTweet.isTopicRelevant()+"\t");
 				pw.print(currTweet.getText()+"\t");
 				pw.print(currTweet.getPositiveLexiconCount()+"\t");
@@ -318,7 +310,7 @@ public class MaxentHelper {
 	
 	// count[0] = correct prediction
 	// count[1] = wrong prediction
-	public static TreeMap<String,Integer> classify(String trainFilename, String testFilename, int fold, String command) {
+	public static TreeMap<String,Integer> classify(String trainFilename, String testFilename, String fold, String command, boolean isOnlineTesting) {
 		if (command.equalsIgnoreCase("unigram")) createPropUnigram();
 		else if (command.equalsIgnoreCase("ngram")) createPropNgram();
 		else {
@@ -350,6 +342,8 @@ public class MaxentHelper {
 
 			Datum<String,String> d = cdc.makeDatumFromLine(line);
 			String predictedAnswer = cl.classOf(d);
+			
+			if (isOnlineTesting) System.out.println(predictedAnswer + "\t" + line);
 			
 			// Evaluation
 			if (correctAnswer.equals(predictedAnswer)) {
