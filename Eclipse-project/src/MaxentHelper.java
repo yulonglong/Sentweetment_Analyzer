@@ -76,6 +76,11 @@ public class MaxentHelper {
 			pw.println("13.splitWordsRegexp = \\\\s+");
 			pw.println("13.useSplitWords = true");
 			
+//			// Tweet with POS (not used)
+//			pw.println("14.useNGrams=false");
+//			pw.println("14.splitWordsRegexp = \\\\s+");
+//			pw.println("14.useSplitWords = true");
+			
 			pw.println("goldAnswerColumn=0");
 			pw.println("intern=true");
 			pw.println("sigma=3");
@@ -179,6 +184,8 @@ public class MaxentHelper {
 				pw.print(currTweet.getFollowersCount()+"\t");
 				pw.print(currTweet.getFavouritesCount()+"\t");
 				pw.print(currTweet.getUserId()+"\t");
+				
+//				pw.print(currTweet.getTextWithPOS()+"\t");
 				
 				pw.println();
 				pw.flush();

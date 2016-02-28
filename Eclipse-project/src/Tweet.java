@@ -11,11 +11,15 @@ import edu.stanford.nlp.ling.HasWord;
 import edu.stanford.nlp.process.CoreLabelTokenFactory;
 import edu.stanford.nlp.process.PTBTokenizer;
 
+import edu.stanford.nlp.ling.*;
+import edu.stanford.nlp.tagger.maxent.*;
+
 public class Tweet {
 	private String topic;
 	private String sentiment;
 	private String predictedSentiment;
 	private String text;
+	private String textWithPOS;
 	private String id;
 	
 	private List<String> hashtags;
@@ -73,6 +77,17 @@ public class Tweet {
 				sb.append(coreLabel.toString().toLowerCase() + " ");
 			}
 			text = sb.toString();
+			
+			// To POS-tag the text
+//			StringBuilder sbPos = new StringBuilder();
+//			List<List<HasWord>> sentences = MaxentTagger.tokenizeText(new StringReader(text));
+//			for (List<HasWord> sentence : sentences) {
+//				List<TaggedWord> taggedSentence = LexiconSentiment.s_tagger.tagger.tagSentence(sentence);
+//				for (TaggedWord token : taggedSentence) {
+//					sbPos.append(token.toString()+" ");
+//				}
+//			}
+//			textWithPOS = sbPos.toString();
 		}
 		else{
 			System.err.println("no text key in: " + tweetFname);
@@ -153,6 +168,7 @@ public class Tweet {
 		return "-1";
 	}
 	public String getText() { return text; }
+	public String getTextWithPOS() { return textWithPOS; }
 	public String getId() { return id; }
 	public int getRetweets() {  return retweets; }
 	public String getTimezone() {  return timezone; }

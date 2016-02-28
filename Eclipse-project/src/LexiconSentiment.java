@@ -16,6 +16,8 @@ public class LexiconSentiment {
 	
 	private ArrayList<Tweet> onlineTweetList = null;
 	
+	public static Tagger s_tagger = null;
+	
 	public static boolean s_runDevelopment = false;
 	public static boolean s_runTraining = true;
 	public static boolean s_runOnlineTesting = false;
@@ -37,6 +39,7 @@ public class LexiconSentiment {
 	}
 
 	public LexiconSentiment(){
+		s_tagger = new Tagger();
 		// TODO Auto-generated constructor stub
 		//initialize lexicon structure
 		s_negativeLexicon = new TreeSet<String>();
@@ -318,8 +321,8 @@ public class LexiconSentiment {
 			String testFilename = "test"+fold+".txt";
 			
 			// Use Maxent
-			MaxentHelper.createMaxentFile(trainingList, trainFilename);
-			MaxentHelper.createMaxentFile(testList, testFilename);
+//			MaxentHelper.createMaxentFile(trainingList, trainFilename);
+//			MaxentHelper.createMaxentFile(testList, testFilename);
 			TreeMap<String,Integer> cm = MaxentHelper.classify(trainFilename, testFilename, Integer.toString(fold), "unigram", false);
 			
 			// Use SVM
